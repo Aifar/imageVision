@@ -167,11 +167,9 @@ class ImageViewer {
                     <div class="detail-row">
                         <span class="detail-label">原图:</span>
                         <span>${image.originalWidth} × ${image.originalHeight}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">大小:</span>
                         <span>${this.formatFileSize(image.size)}</span>
                     </div>
+                   
                 </div>
             </div>
         `;
