@@ -25,6 +25,23 @@
           </div>
         </div>
         <div class="toolbar-right">
+          <div class="compression-controls" style="display: none">
+            <button id="compressBtn" class="btn btn-secondary">
+              <i class="fas fa-compress-alt"></i>
+              压缩图片
+            </button>
+            <div class="compression-settings">
+              <label for="compressionQuality">质量:</label>
+              <input
+                type="range"
+                id="compressionQuality"
+                min="50"
+                max="95"
+                value="85"
+              />
+              <span id="qualityValue">85%</span>
+            </div>
+          </div>
           <div class="search-container">
             <i class="fas fa-search search-icon"></i>
             <input
@@ -63,7 +80,7 @@
 
         <!-- 图片网格 -->
         <div class="image-grid" id="imageGrid" style="display: none">
-          <!-- 动态生成的图片项 -->
+          <!-- 动态生成的图片对比项 -->
         </div>
 
         <!-- 统计信息 -->
@@ -94,6 +111,64 @@
               <span class="label">文件大小:</span>
               <span id="modalFileSize"></span>
             </div>
+            <div class="detail-item">
+              <span class="label">压缩建议:</span>
+              <span id="modalCompressionSuggestion"></span>
+            </div>
+          </div>
+          <div class="compression-actions" style="display: none">
+            <button id="compressSingleBtn" class="btn btn-primary">
+              <i class="fas fa-compress-alt"></i>
+              压缩此图片
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 压缩进度对话框 -->
+    <div class="modal" id="compressionModal">
+      <div class="modal-content compression-modal">
+        <div class="compression-header">
+          <h3>正在压缩图片...</h3>
+          <div class="compression-progress">
+            <div class="progress-bar">
+              <div class="progress-fill" id="compressionProgress"></div>
+            </div>
+            <div class="progress-text">
+              <span id="compressionCurrent">0</span> /
+              <span id="compressionTotal">0</span>
+            </div>
+          </div>
+        </div>
+        <div
+          class="compression-results"
+          id="compressionResults"
+          style="display: none"
+        >
+          <h4>压缩完成</h4>
+          <div class="results-summary">
+            <div class="result-item">
+              <span class="label">成功:</span>
+              <span id="compressionSuccess">0</span>
+            </div>
+            <div class="result-item">
+              <span class="label">失败:</span>
+              <span id="compressionFailed">0</span>
+            </div>
+            <div class="result-item">
+              <span class="label">节省空间:</span>
+              <span id="compressionSaved">0 KB</span>
+            </div>
+          </div>
+          <div class="compression-actions">
+            <button id="openCompressedFolder" class="btn btn-primary">
+              <i class="fas fa-folder-open"></i>
+              打开压缩文件夹
+            </button>
+            <button id="closeCompressionModal" class="btn btn-secondary">
+              关闭
+            </button>
           </div>
         </div>
       </div>

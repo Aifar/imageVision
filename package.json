@@ -7,13 +7,15 @@
     "start": "electron .",
     "dev": "electron . --dev",
     "build": "electron-builder",
-    "postinstall": "electron-builder install-app-deps"
+    "postinstall": "electron-builder install-app-deps",
+    "test": "node test-compression.js"
   },
   "keywords": [
     "electron",
     "image",
     "viewer",
-    "thumbnail"
+    "thumbnail",
+    "compression"
   ],
   "author": "Your Name",
   "license": "MIT",
@@ -22,6 +24,12 @@
     "electron-builder": "^24.6.4"
   },
   "dependencies": {
+    "sharp": "^0.33.0",
+    "imagemin": "^8.0.1",
+    "imagemin-mozjpeg": "^10.0.0",
+    "imagemin-pngquant": "^9.0.2",
+    "imagemin-gifsicle": "^7.0.0",
+    "imagemin-webp": "^8.0.0"
   },
   "build": {
     "appId": "com.example.electron-image-viewer",

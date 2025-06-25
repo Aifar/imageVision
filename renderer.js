@@ -22,6 +22,12 @@ class ImageViewer {
         this.imageCount = document.getElementById('imageCount');
         this.folderPath = document.getElementById('folderPath');
 
+        // 压缩控件元素
+        this.compressionControls = document.querySelector('.compression-controls');
+        this.compressBtn = document.getElementById('compressBtn');
+        this.compressionQuality = document.getElementById('compressionQuality');
+        this.qualityValue = document.getElementById('qualityValue');
+
         // 模态框元素
         this.imageModal = document.getElementById('imageModal');
         this.modalClose = document.getElementById('modalClose');
@@ -29,6 +35,20 @@ class ImageViewer {
         this.modalTitle = document.getElementById('modalTitle');
         this.modalOriginalSize = document.getElementById('modalOriginalSize');
         this.modalFileSize = document.getElementById('modalFileSize');
+        this.modalCompressionSuggestion = document.getElementById('modalCompressionSuggestion');
+        this.compressSingleBtn = document.getElementById('compressSingleBtn');
+
+        // 压缩进度对话框元素
+        this.compressionModal = document.getElementById('compressionModal');
+        this.compressionProgress = document.getElementById('compressionProgress');
+        this.compressionCurrent = document.getElementById('compressionCurrent');
+        this.compressionTotal = document.getElementById('compressionTotal');
+        this.compressionResults = document.getElementById('compressionResults');
+        this.compressionSuccess = document.getElementById('compressionSuccess');
+        this.compressionFailed = document.getElementById('compressionFailed');
+        this.compressionSaved = document.getElementById('compressionSaved');
+        this.openCompressedFolder = document.getElementById('openCompressedFolder');
+        this.closeCompressionModal = document.getElementById('closeCompressionModal');
     }
 
     bindEvents() {
@@ -39,10 +59,27 @@ class ImageViewer {
         this.searchInput.addEventListener('input', (e) => this.handleSearch(e.target.value));
         this.clearSearch.addEventListener('click', () => this.clearSearchInput());
 
+        // 压缩功能
+        this.compressBtn.addEventListener('click', () => this.compressAllImages());
+        this.compressionQuality.addEventListener('input', (e) => {
+            this.qualityValue.textContent = `${e.target.value}%`;
+        });
+        this.compressSingleBtn.addEventListener('click', () => this.compressSingleImage());
+
+        // 压缩进度对话框事件
+        this.closeCompressionModal.addEventListener('click', () => this.closeCompressionModal());
+        this.openCompressedFolder.addEventListener('click', () => this.openCompressedFolder());
+        this.compressionModal.addEventListener('click', (e) => {
+            if (e.target === this.compressionModal) {
+                this.closeCompressionModal();
+            }
+        });
+
         // 键盘快捷键
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 this.closeModal();
+                this.closeCompressionModal();
             }
             if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
                 e.preventDefault();
@@ -96,6 +133,8 @@ class ImageViewer {
             } else {
                 this.renderImages(images);
                 this.updateStats(images.length, this.currentDirectory);
+                // 显示压缩控件
+                this.compressionControls.style.display = 'flex';
             }
         } catch (error) {
             console.error('加载图片失败:', error);
@@ -148,28 +187,54 @@ class ImageViewer {
         card.className = 'image-card';
         card.addEventListener('click', () => this.openModal(image));
 
-        // 使用 file:// 协议加载缩略图文件
-        const thumbnailSrc = `file://${image.thumbnail}`;
+        // 使用 file:// 协议加载图片文件
+        const originalSrc = `file://${image.path}`;
+        const compressedSrc = `file://${image.compressedPath}`;
 
         card.innerHTML = `
-            <img class="image-thumbnail" 
-                 src="${thumbnailSrc}" 
-                 alt="${image.name}"
-                 loading="lazy"
-                 onerror="this.style.display='none'; this.nextElementSibling.innerHTML='<div style=\\'color: #999; text-align: center; padding: 20px;\\'>缩略图加载失败</div>';">
+            <div class="image-comparison">
+                <div class="image-side original">
+                    <div class="image-side-label">原图</div>
+                    <img src="${originalSrc}" 
+                         alt="${image.name} (原图)"
+                         loading="lazy"
+                         onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\\'color: white; text-align: center; padding: 20px;\\'>原图加载失败</div>';">
+                </div>
+                <div class="image-side compressed">
+                    <div class="image-side-label">压缩后</div>
+                    <img src="${compressedSrc}" 
+                         alt="${image.name} (压缩后)"
+                         loading="lazy"
+                         onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\\'color: white; text-align: center; padding: 20px;\\'>压缩图加载失败</div>';">
+                </div>
+            </div>
             <div class="image-info">
                 <div class="image-name" title="${image.name}">${image.name}</div>
                 <div class="image-details">
                     <div class="detail-row">
-                        <span class="detail-label">缩略图:</span>
-                        <span>${image.thumbnailWidth} × ${image.thumbnailHeight}</span>
+                        <span class="detail-label">原图尺寸:</span>
+                        <span>${image.originalWidth} × ${image.originalHeight}</span>
                     </div>
                     <div class="detail-row">
-                        <span class="detail-label">原图:</span>
-                        <span>${image.originalWidth} × ${image.originalHeight}</span>
-                        <span>${this.formatFileSize(image.size)}</span>
+                        <span class="detail-label">原图大小:</span>
+                        <span>${this.formatFileSize(image.originalSize)}</span>
                     </div>
-                   
+                    <div class="detail-row">
+                        <span class="detail-label">压缩后大小:</span>
+                        <span>${this.formatFileSize(image.compressedSize)}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">压缩方法:</span>
+                        <span>${this.getCompressionMethodName(image.compressionMethod)}</span>
+                    </div>
+                </div>
+                <div class="compression-stats">
+                    <div class="compression-ratio">
+                        节省 ${image.compressionRatio}%
+                    </div>
+                    <div class="compression-method">
+                        ${this.getCompressionMethodName(image.compressionMethod)}
+                    </div>
                 </div>
             </div>
         `;
@@ -178,11 +243,31 @@ class ImageViewer {
     }
 
     async openModal(image) {
+        this.currentImage = image;
         this.modalTitle.textContent = image.name;
         this.modalOriginalSize.textContent = `${image.originalWidth} × ${image.originalHeight}`;
-        this.modalFileSize.textContent = this.formatFileSize(image.size);
+        this.modalFileSize.textContent = this.formatFileSize(image.originalSize);
 
-        // 加载高质量图片
+        // 获取压缩建议
+        try {
+            const suggestions = await window.electronAPI.getCompressionSuggestions(image.path);
+            if (suggestions.recommended) {
+                this.modalCompressionSuggestion.textContent = suggestions.reason;
+                this.compressSingleBtn.style.display = 'block';
+                this.compressSingleBtn.parentElement.style.display = 'block';
+            } else {
+                this.modalCompressionSuggestion.textContent = suggestions.reason || '无需压缩';
+                this.compressSingleBtn.style.display = 'none';
+                this.compressSingleBtn.parentElement.style.display = 'none';
+            }
+        } catch (error) {
+            console.error('获取压缩建议失败:', error);
+            this.modalCompressionSuggestion.textContent = '无法获取压缩建议';
+            this.compressSingleBtn.style.display = 'none';
+            this.compressSingleBtn.parentElement.style.display = 'none';
+        }
+
+        // 加载高质量图片（显示原图）
         this.modalImage.src = `file://${image.path}`;
         this.imageModal.style.display = 'block';
 
@@ -268,6 +353,106 @@ class ImageViewer {
         }
 
         return `${size.toFixed(1)} ${units[unitIndex]}`;
+    }
+
+    getCompressionMethodName(method) {
+        const methodNames = {
+            'sharp': 'Sharp',
+            'imagemin': 'Imagemin',
+            'copy': '复制',
+            'existing': '已存在',
+            'none': '无压缩'
+        };
+        return methodNames[method] || method;
+    }
+
+    // 压缩所有图片
+    async compressAllImages() {
+        if (!this.filteredImages || this.filteredImages.length === 0) {
+            this.showError('没有可压缩的图片');
+            return;
+        }
+
+        const quality = parseInt(this.compressionQuality.value);
+        const imagePaths = this.filteredImages.map(img => img.path);
+
+        this.showCompressionModal();
+        this.updateCompressionProgress(0, imagePaths.length);
+
+        try {
+            const results = await window.electronAPI.compressImages(imagePaths, { quality });
+            this.showCompressionResults(results);
+        } catch (error) {
+            console.error('压缩图片失败:', error);
+            this.showError('压缩图片失败，请重试');
+            this.closeCompressionModal();
+        }
+    }
+
+    // 压缩单张图片
+    async compressSingleImage() {
+        if (!this.currentImage) {
+            return;
+        }
+
+        const quality = parseInt(this.compressionQuality.value);
+        this.closeModal();
+        this.showCompressionModal();
+        this.updateCompressionProgress(0, 1);
+
+        try {
+            const results = await window.electronAPI.compressImages([this.currentImage.path], { quality });
+            this.showCompressionResults(results);
+        } catch (error) {
+            console.error('压缩图片失败:', error);
+            this.showError('压缩图片失败，请重试');
+            this.closeCompressionModal();
+        }
+    }
+
+    // 显示压缩进度对话框
+    showCompressionModal() {
+        this.compressionModal.style.display = 'block';
+        this.compressionResults.style.display = 'none';
+        this.compressionProgress.style.width = '0%';
+    }
+
+    // 更新压缩进度
+    updateCompressionProgress(current, total) {
+        const percentage = (current / total) * 100;
+        this.compressionProgress.style.width = `${percentage}%`;
+        this.compressionCurrent.textContent = current;
+        this.compressionTotal.textContent = total;
+    }
+
+    // 显示压缩结果
+    showCompressionResults(results) {
+        const successCount = results.filter(r => r.success).length;
+        const failedCount = results.length - successCount;
+        const totalSaved = results
+            .filter(r => r.success)
+            .reduce((sum, r) => sum + (r.originalSize - r.compressedSize), 0);
+
+        this.compressionSuccess.textContent = successCount;
+        this.compressionFailed.textContent = failedCount;
+        this.compressionSaved.textContent = this.formatFileSize(totalSaved);
+
+        this.compressionResults.style.display = 'block';
+    }
+
+    // 关闭压缩进度对话框
+    closeCompressionModal() {
+        this.compressionModal.style.display = 'none';
+    }
+
+    // 打开压缩文件夹
+    openCompressedFolder() {
+        if (this.currentDirectory) {
+            const compressedDir = path.join(this.currentDirectory, 'compressed');
+            // 这里需要调用主进程来打开文件夹
+            // 暂时使用系统默认方式
+            window.open(`file://${compressedDir}`);
+        }
     }
 }
 
