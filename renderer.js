@@ -5,9 +5,10 @@ class ImageViewer {
         this.filteredImages = [];
         this.currentSearchTerm = '';
 
-        // 添加Intersection Observer用于懒加载压缩
-        this.compressionObserver = null;
-        this.initializeCompressionObserver();
+        // 并发压缩控制
+        this.maxConcurrentCompressions = 100;
+        this.currentCompressions = 0;
+        this.compressionQueue = [];
 
         this.initializeElements();
         this.bindEvents();
@@ -53,86 +54,6 @@ class ImageViewer {
         this.compressionSaved = document.getElementById('compressionSaved');
         this.openCompressedFolder = document.getElementById('openCompressedFolder');
         this.closeCompressionModal = document.getElementById('closeCompressionModal');
-    }
-
-    initializeCompressionObserver() {
-        if ('IntersectionObserver' in window) {
-            this.compressionObserver = new IntersectionObserver(
-                (entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            const card = entry.target;
-                            const imagePath = card.dataset.imagePath;
-                            const isCompressed = card.dataset.isCompressed === 'true';
-
-                            if (!isCompressed && imagePath) {
-                                this.compressImageInBackground(card, imagePath);
-                                this.compressionObserver.unobserve(card);
-                            }
-                        }
-                    });
-                },
-                {
-                    rootMargin: '100px',
-                    threshold: 0.1
-                }
-            );
-        }
-    }
-
-    async compressImageInBackground(card, imagePath) {
-        try {
-            // 显示压缩中状态
-            const compressionInfo = card.querySelector('.compression-info');
-            const compressionStatus = card.querySelector('.compression-status');
-
-            if (compressionStatus) {
-                compressionStatus.textContent = '压缩中...';
-                compressionStatus.className = 'compression-status compressing';
-            }
-
-            // 调用后台压缩接口
-            const result = await window.electronAPI.compressSingleImage(imagePath, {
-                quality: parseInt(this.compressionQuality.value)
-            });
-
-            if (result.success) {
-                // 更新压缩信息显示
-                if (compressionInfo) {
-                    compressionInfo.innerHTML = `
-                        <div class="detail-row">
-                            <span class="detail-label">压缩后大小:</span>
-                            <span>${this.formatFileSize(result.compressedSize)}</span>
-                            <span class="compression-ratio">节省 ${result.compressionRatio}%</span>
-                        </div>
-                    `;
-                }
-
-                // 标记为已压缩
-                card.dataset.isCompressed = 'true';
-            } else {
-                // 显示压缩失败
-                if (compressionInfo) {
-                    compressionInfo.innerHTML = `
-                        <div class="detail-row">
-                            <span class="error-message">压缩失败: ${result.error || '未知错误'}</span>
-                        </div>
-                    `;
-                }
-            }
-        } catch (error) {
-            console.error('后台压缩失败:', error);
-
-            const compressionInfo = card.querySelector('.compression-info');
-
-            if (compressionInfo) {
-                compressionInfo.innerHTML = `
-                    <div class="detail-row">
-                        <span class="error-message">压缩失败: ${error.message}</span>
-                    </div>
-                `;
-            }
-        }
     }
 
     bindEvents() {
@@ -312,9 +233,9 @@ class ImageViewer {
             </div>
         `;
 
-        // 如果图片还未压缩，添加到观察器中
-        if (!image.isCompressed && this.compressionObserver) {
-            this.compressionObserver.observe(card);
+        // 如果图片还未压缩，添加到压缩队列
+        if (!image.isCompressed) {
+            this.addToCompressionQueue(card, image.path);
         }
 
         return card;
@@ -362,9 +283,31 @@ class ImageViewer {
     }
 
     updateStats(count, folderPath) {
+        const totalImages = this.allImages.length;
+        const compressedImages = this.allImages.filter(img => img.isCompressed).length;
+        const compressionProgress = totalImages > 0 ? Math.round((compressedImages / totalImages) * 100) : 0;
+
         this.imageCount.textContent = `${count} 张图片`;
         if (this.currentSearchTerm) {
             this.imageCount.textContent += ` (搜索: "${this.currentSearchTerm}")`;
+        }
+
+        // 添加压缩进度信息
+        if (totalImages > 0) {
+            const queueCount = this.compressionQueue ? this.compressionQueue.length : 0;
+            const processingCount = this.currentCompressions || 0;
+
+            if (compressionProgress < 100) {
+                this.imageCount.textContent += ` | 压缩进度: ${compressionProgress}% (${compressedImages}/${totalImages})`;
+                if (queueCount > 0) {
+                    this.imageCount.textContent += ` | 队列: ${queueCount}`;
+                }
+                if (processingCount > 0) {
+                    this.imageCount.textContent += ` | 压缩中: ${processingCount}`;
+                }
+            } else {
+                this.imageCount.textContent += ` | 全部压缩完成`;
+            }
         }
 
         const folderName = folderPath ? folderPath.split(/[/\\]/).pop() : '';
@@ -530,6 +473,102 @@ class ImageViewer {
             // 这里需要调用主进程来打开文件夹
             // 暂时使用系统默认方式
             window.open(`file://${compressedDir}`);
+        }
+    }
+
+    // 并发压缩控制方法
+    async processCompressionQueue() {
+        while (this.compressionQueue.length > 0 && this.currentCompressions < this.maxConcurrentCompressions) {
+            const { card, imagePath } = this.compressionQueue.shift();
+            this.currentCompressions++;
+
+            // 异步执行压缩，不等待完成
+            this.compressImageInBackground(card, imagePath).finally(() => {
+                this.currentCompressions--;
+                // 压缩完成后，继续处理队列
+                this.processCompressionQueue();
+            });
+        }
+    }
+
+    // 添加图片到压缩队列
+    addToCompressionQueue(card, imagePath) {
+        this.compressionQueue.push({ card, imagePath });
+
+        // 更新等待状态显示队列位置
+        const compressionStatus = card.querySelector('.compression-status');
+        if (compressionStatus && compressionStatus.classList.contains('pending')) {
+            const queuePosition = this.compressionQueue.length;
+            compressionStatus.textContent = `排队中 (第${queuePosition}位)`;
+        }
+
+        this.processCompressionQueue();
+    }
+
+    async compressImageInBackground(card, imagePath) {
+        try {
+            // 显示压缩中状态
+            const compressionInfo = card.querySelector('.compression-info');
+            const compressionStatus = card.querySelector('.compression-status');
+
+            if (compressionStatus) {
+                compressionStatus.textContent = `压缩中... (${this.currentCompressions}/${this.maxConcurrentCompressions})`;
+                compressionStatus.className = 'compression-status compressing';
+            }
+
+            // 调用后台压缩接口
+            const result = await window.electronAPI.compressSingleImage(imagePath, {
+                quality: parseInt(this.compressionQuality.value)
+            });
+
+            if (result.success) {
+                // 更新压缩信息显示
+                if (compressionInfo) {
+                    compressionInfo.innerHTML = `
+                        <div class="detail-row">
+                            <span class="detail-label">压缩后大小:</span>
+                            <span>${this.formatFileSize(result.compressedSize)}</span>
+                            <span class="compression-ratio">节省 ${result.compressionRatio}%</span>
+                        </div>
+                    `;
+                }
+
+                // 标记为已压缩
+                card.dataset.isCompressed = 'true';
+
+                // 更新对应的图片数据
+                const imageIndex = this.allImages.findIndex(img => img.path === imagePath);
+                if (imageIndex !== -1) {
+                    this.allImages[imageIndex].isCompressed = true;
+                    this.allImages[imageIndex].compressedSize = result.compressedSize;
+                    this.allImages[imageIndex].compressionRatio = result.compressionRatio;
+                    this.allImages[imageIndex].compressionMethod = result.method;
+                }
+
+                // 更新统计信息
+                this.updateStats(this.filteredImages.length, this.currentDirectory);
+            } else {
+                // 显示压缩失败
+                if (compressionInfo) {
+                    compressionInfo.innerHTML = `
+                        <div class="detail-row">
+                            <span class="error-message">压缩失败: ${result.error || '未知错误'}</span>
+                        </div>
+                    `;
+                }
+            }
+        } catch (error) {
+            console.error('后台压缩失败:', error);
+
+            const compressionInfo = card.querySelector('.compression-info');
+
+            if (compressionInfo) {
+                compressionInfo.innerHTML = `
+                    <div class="detail-row">
+                        <span class="error-message">压缩失败: ${error.message}</span>
+                    </div>
+                `;
+            }
         }
     }
 }
