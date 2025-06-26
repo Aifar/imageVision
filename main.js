@@ -1,9 +1,23 @@
 const { app, BrowserWindow, ipcMain, dialog, nativeImage } = require('electron');
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
 const sharp = require('sharp');
 
 let mainWindow;
+
+// 获取默认压缩文件夹路径
+function getDefaultCompressedFolder() {
+    const documentsPath = path.join(os.homedir(), 'Documents');
+    const imagevisionPath = path.join(documentsPath, 'imagevision');
+
+    // 确保目录存在
+    if (!fs.existsSync(imagevisionPath)) {
+        fs.mkdirSync(imagevisionPath, { recursive: true });
+    }
+
+    return imagevisionPath;
+}
 
 function createWindow() {
     mainWindow = new BrowserWindow({
@@ -56,6 +70,11 @@ ipcMain.handle('select-directory', async () => {
         return result.filePaths[0];
     }
     return null;
+});
+
+// 获取默认压缩文件夹路径
+ipcMain.handle('get-default-compressed-folder', () => {
+    return getDefaultCompressedFolder();
 });
 
 // 递归搜索图片文件
@@ -350,7 +369,9 @@ ipcMain.handle('compress-single-image', async (event, imagePath, options = {}) =
         const fileName = path.basename(imagePath);
         const nameWithoutExt = path.parse(fileName).name;
         const ext = path.parse(fileName).ext;
-        const compressedDir = path.join(path.dirname(imagePath), 'compressed');
+
+        // 使用自定义压缩目录或默认目录
+        const compressedDir = options.compressedDir || path.join(path.dirname(imagePath), 'compressed');
         const compressedPath = path.join(compressedDir, `${nameWithoutExt}_compressed${ext}`);
 
         // 确保压缩目录存在

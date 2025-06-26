@@ -26,10 +26,20 @@
         </div>
         <div class="toolbar-right">
           <div class="compression-controls" style="display: none">
-            <button id="compressBtn" class="btn btn-secondary">
-              <i class="fas fa-compress-alt"></i>
-              压缩图片
-            </button>
+            <div class="folder-setting">
+              <label for="compressedFolderPath">保存到:</label>
+              <input
+                type="text"
+                id="compressedFolderPath"
+                class="folder-input"
+                placeholder="选择压缩图片保存文件夹"
+                readonly
+              />
+              <button id="selectCompressedFolderBtn" class="btn btn-secondary">
+                <i class="fas fa-folder"></i>
+                选择文件夹
+              </button>
+            </div>
             <div class="compression-settings">
               <label for="compressionQuality">质量:</label>
               <input

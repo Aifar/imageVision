@@ -270,8 +270,6 @@ body {
     transform: scale(1.05);
 }
 
-
-
 .image-info {
     padding: 6px;
     height: 120px; /* 固定信息区高度 */
@@ -491,8 +489,6 @@ body {
         height: 200px;
     }
     
-
-    
     .compression-stats {
         flex-direction: column;
         gap: 8px;
@@ -511,6 +507,36 @@ body {
     align-items: center;
     gap: 16px;
     margin-right: 16px;
+}
+
+.folder-setting {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #6c757d;
+}
+
+.folder-setting label {
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.folder-input {
+    width: 200px;
+    padding: 6px 12px;
+    border: 1px solid #e1e5e9;
+    border-radius: 6px;
+    font-size: 14px;
+    background: #f8f9fa;
+    color: #495057;
+    cursor: pointer;
+}
+
+.folder-input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
 }
 
 .compression-settings {
@@ -658,21 +684,30 @@ body {
     .compression-controls {
         flex-direction: column;
         gap: 12px;
-        margin-right: 0;
-        margin-bottom: 16px;
+        align-items: stretch;
     }
-    
+
+    .folder-setting {
+        flex-direction: column;
+        gap: 8px;
+        align-items: stretch;
+    }
+
+    .folder-input {
+        width: 100%;
+    }
+
     .compression-settings {
         justify-content: center;
     }
-    
+
     .results-summary {
         grid-template-columns: 1fr;
-        gap: 12px;
     }
-    
+
     .compression-results .compression-actions {
         flex-direction: column;
+        gap: 8px;
     }
 }
 
@@ -746,8 +781,6 @@ body {
     font-size: 12px;
     font-weight: 500;
 }
-
-
 
 /* 响应式优化 */
 @media (max-width: 768px) {
