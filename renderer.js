@@ -5,6 +5,10 @@ class ImageViewer {
         this.filteredImages = [];
         this.currentSearchTerm = '';
 
+        // 添加Intersection Observer用于懒加载压缩
+        this.compressionObserver = null;
+        this.initializeCompressionObserver();
+
         this.initializeElements();
         this.bindEvents();
     }
@@ -49,6 +53,86 @@ class ImageViewer {
         this.compressionSaved = document.getElementById('compressionSaved');
         this.openCompressedFolder = document.getElementById('openCompressedFolder');
         this.closeCompressionModal = document.getElementById('closeCompressionModal');
+    }
+
+    initializeCompressionObserver() {
+        if ('IntersectionObserver' in window) {
+            this.compressionObserver = new IntersectionObserver(
+                (entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const card = entry.target;
+                            const imagePath = card.dataset.imagePath;
+                            const isCompressed = card.dataset.isCompressed === 'true';
+
+                            if (!isCompressed && imagePath) {
+                                this.compressImageInBackground(card, imagePath);
+                                this.compressionObserver.unobserve(card);
+                            }
+                        }
+                    });
+                },
+                {
+                    rootMargin: '100px',
+                    threshold: 0.1
+                }
+            );
+        }
+    }
+
+    async compressImageInBackground(card, imagePath) {
+        try {
+            // 显示压缩中状态
+            const compressionInfo = card.querySelector('.compression-info');
+            const compressionStatus = card.querySelector('.compression-status');
+
+            if (compressionStatus) {
+                compressionStatus.textContent = '压缩中...';
+                compressionStatus.className = 'compression-status compressing';
+            }
+
+            // 调用后台压缩接口
+            const result = await window.electronAPI.compressSingleImage(imagePath, {
+                quality: parseInt(this.compressionQuality.value)
+            });
+
+            if (result.success) {
+                // 更新压缩信息显示
+                if (compressionInfo) {
+                    compressionInfo.innerHTML = `
+                        <div class="detail-row">
+                            <span class="detail-label">压缩后大小:</span>
+                            <span>${this.formatFileSize(result.compressedSize)}</span>
+                            <span class="compression-ratio">节省 ${result.compressionRatio}%</span>
+                        </div>
+                    `;
+                }
+
+                // 标记为已压缩
+                card.dataset.isCompressed = 'true';
+            } else {
+                // 显示压缩失败
+                if (compressionInfo) {
+                    compressionInfo.innerHTML = `
+                        <div class="detail-row">
+                            <span class="error-message">压缩失败: ${result.error || '未知错误'}</span>
+                        </div>
+                    `;
+                }
+            }
+        } catch (error) {
+            console.error('后台压缩失败:', error);
+
+            const compressionInfo = card.querySelector('.compression-info');
+
+            if (compressionInfo) {
+                compressionInfo.innerHTML = `
+                    <div class="detail-row">
+                        <span class="error-message">压缩失败: ${error.message}</span>
+                    </div>
+                `;
+            }
+        }
     }
 
     bindEvents() {
@@ -185,40 +269,53 @@ class ImageViewer {
     createImageCard(image) {
         const card = document.createElement('div');
         card.className = 'image-card';
+        card.dataset.imagePath = image.path;
+        card.dataset.isCompressed = image.isCompressed.toString();
         card.addEventListener('click', () => this.openModal(image));
 
         // 使用 file:// 协议加载图片文件
         const originalSrc = `file://${image.path}`;
-        const compressedSrc = `file://${image.compressedPath}`;
+
+        // 根据是否已压缩显示不同的压缩信息
+        const compressionInfoHtml = image.isCompressed ? `
+            <div class="detail-row">
+                <span class="detail-label">压缩后大小:</span>
+                <span>${this.formatFileSize(image.compressedSize)}</span>
+                <span class="compression-ratio">节省 ${image.compressionRatio}%</span>
+            </div>
+        ` : `
+            <div class="detail-row">
+                <span class="compression-status pending">等待压缩...</span>
+            </div>
+        `;
 
         card.innerHTML = `
-            <div class="image-comparison">
-                <div class="image-side original">   
-                    <img src="${compressedSrc}" 
-                         alt="${image.name} (压缩)"
-                         loading="lazy"
-                         onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\\'color: white; text-align: center; padding: 20px;\\'>原图加载失败</div>';">
-                </div>
+            <div class="image-container">
+                <img src="${originalSrc}" 
+                     alt="${image.name}"
+                     loading="lazy"
+                     onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\\'color: white; text-align: center; padding: 20px;\\'>图片加载失败</div>';">
             </div>
             <div class="image-info">
                 <div class="image-name" title="${image.name}">${image.name}</div>
                 <div class="image-details">
                     <div class="detail-row">
-                        <span class="detail-label">原图尺寸:</span>
+                        <span class="detail-label">尺寸:</span>
                         <span>${image.originalWidth} × ${image.originalHeight}</span>
                         <span class="detail-label">原图大小:</span>
                         <span>${this.formatFileSize(image.originalSize)}</span>
                     </div>
-        
-                    <div class="detail-row">
-                        <span class="detail-label">压缩后大小:</span>
-                        <span>${this.formatFileSize(image.compressedSize)}</span>
-                        <span class="compression-ratio">节省 ${image.compressionRatio}%</span>
-                    
-                    </div>                
+                    <div class="compression-info">
+                        ${compressionInfoHtml}
+                    </div>
                 </div>
             </div>
         `;
+
+        // 如果图片还未压缩，添加到观察器中
+        if (!image.isCompressed && this.compressionObserver) {
+            this.compressionObserver.observe(card);
+        }
 
         return card;
     }

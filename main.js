@@ -283,8 +283,6 @@ ipcMain.handle('search-images', async (event, directoryPath, searchTerm = '') =>
             );
         }
 
-        // 确保 thumb 目录存在
-        const thumbDir = ensureThumbDirectory(directoryPath);
         // 确保 compressed 目录存在
         const compressedDir = path.join(directoryPath, 'compressed');
         if (!fs.existsSync(compressedDir)) {
@@ -306,25 +304,17 @@ ipcMain.handle('search-images', async (event, directoryPath, searchTerm = '') =>
                     const ext = path.parse(fileName).ext;
                     const compressedPath = path.join(compressedDir, `${nameWithoutExt}_compressed${ext}`);
 
-                    // 检查压缩图片是否已存在，如果不存在则压缩
+                    // 检查压缩图片是否已存在
                     let compressedSize = 0;
                     let compressionRatio = 0;
                     let compressionMethod = 'none';
+                    let isCompressed = false;
 
-                    if (!fs.existsSync(compressedPath)) {
-                        const compressionResult = await compressImage(filePath, compressedPath, {
-                            quality: 85 // 默认压缩质量
-                        });
-
-                        if (compressionResult.success) {
-                            compressedSize = getCompressedFileSize(compressedPath);
-                            compressionRatio = ((stats.size - compressedSize) / stats.size * 100);
-                            compressionMethod = compressionResult.method;
-                        }
-                    } else {
+                    if (fs.existsSync(compressedPath)) {
                         compressedSize = getCompressedFileSize(compressedPath);
                         compressionRatio = ((stats.size - compressedSize) / stats.size * 100);
                         compressionMethod = 'existing';
+                        isCompressed = true;
                     }
 
                     return {
@@ -337,7 +327,8 @@ ipcMain.handle('search-images', async (event, directoryPath, searchTerm = '') =>
                         compressionMethod: compressionMethod,
                         originalWidth: size.width,
                         originalHeight: size.height,
-                        lastModified: stats.mtime
+                        lastModified: stats.mtime,
+                        isCompressed: isCompressed
                     };
                 } catch (error) {
                     console.error(`处理图片失败: ${filePath}`, error);
@@ -350,6 +341,74 @@ ipcMain.handle('search-images', async (event, directoryPath, searchTerm = '') =>
     } catch (error) {
         console.error('搜索图片失败:', error);
         throw error;
+    }
+});
+
+// 单个图片压缩接口
+ipcMain.handle('compress-single-image', async (event, imagePath, options = {}) => {
+    try {
+        const fileName = path.basename(imagePath);
+        const nameWithoutExt = path.parse(fileName).name;
+        const ext = path.parse(fileName).ext;
+        const compressedDir = path.join(path.dirname(imagePath), 'compressed');
+        const compressedPath = path.join(compressedDir, `${nameWithoutExt}_compressed${ext}`);
+
+        // 确保压缩目录存在
+        if (!fs.existsSync(compressedDir)) {
+            fs.mkdirSync(compressedDir, { recursive: true });
+        }
+
+        // 如果压缩文件已存在，直接返回信息
+        if (fs.existsSync(compressedPath)) {
+            const originalSize = fs.statSync(imagePath).size;
+            const compressedSize = getCompressedFileSize(compressedPath);
+            const compressionRatio = ((originalSize - compressedSize) / originalSize * 100);
+
+            return {
+                success: true,
+                originalPath: imagePath,
+                compressedPath: compressedPath,
+                originalSize: originalSize,
+                compressedSize: compressedSize,
+                compressionRatio: parseFloat(compressionRatio.toFixed(1)),
+                method: 'existing'
+            };
+        }
+
+        // 获取原始文件大小
+        const originalSize = fs.statSync(imagePath).size;
+
+        // 压缩图片
+        const compressionResult = await compressImage(imagePath, compressedPath, options);
+
+        if (compressionResult.success) {
+            // 获取压缩后的文件大小
+            const compressedSize = getCompressedFileSize(compressedPath);
+            const compressionRatio = ((originalSize - compressedSize) / originalSize * 100);
+
+            return {
+                success: true,
+                originalPath: imagePath,
+                compressedPath: compressedPath,
+                originalSize: originalSize,
+                compressedSize: compressedSize,
+                compressionRatio: parseFloat(compressionRatio.toFixed(1)),
+                method: compressionResult.method
+            };
+        } else {
+            return {
+                success: false,
+                originalPath: imagePath,
+                error: '压缩失败'
+            };
+        }
+    } catch (error) {
+        console.error(`压缩单个图片失败: ${imagePath}`, error);
+        return {
+            success: false,
+            originalPath: imagePath,
+            error: error.message
+        };
     }
 });
 
