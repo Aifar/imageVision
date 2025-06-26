@@ -193,19 +193,11 @@ class ImageViewer {
 
         card.innerHTML = `
             <div class="image-comparison">
-                <div class="image-side original">
-                    <div class="image-side-label">原图</div>
-                    <img src="${originalSrc}" 
-                         alt="${image.name} (原图)"
+                <div class="image-side original">   
+                    <img src="${compressedSrc}" 
+                         alt="${image.name} (压缩)"
                          loading="lazy"
                          onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\\'color: white; text-align: center; padding: 20px;\\'>原图加载失败</div>';">
-                </div>
-                <div class="image-side compressed">
-                    <div class="image-side-label">压缩后</div>
-                    <img src="${compressedSrc}" 
-                         alt="${image.name} (压缩后)"
-                         loading="lazy"
-                         onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\\'color: white; text-align: center; padding: 20px;\\'>压缩图加载失败</div>';">
                 </div>
             </div>
             <div class="image-info">
@@ -214,27 +206,16 @@ class ImageViewer {
                     <div class="detail-row">
                         <span class="detail-label">原图尺寸:</span>
                         <span>${image.originalWidth} × ${image.originalHeight}</span>
-                    </div>
-                    <div class="detail-row">
                         <span class="detail-label">原图大小:</span>
                         <span>${this.formatFileSize(image.originalSize)}</span>
                     </div>
+        
                     <div class="detail-row">
                         <span class="detail-label">压缩后大小:</span>
                         <span>${this.formatFileSize(image.compressedSize)}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">压缩方法:</span>
-                        <span>${this.getCompressionMethodName(image.compressionMethod)}</span>
-                    </div>
-                </div>
-                <div class="compression-stats">
-                    <div class="compression-ratio">
-                        节省 ${image.compressionRatio}%
-                    </div>
-                    <div class="compression-method">
-                        ${this.getCompressionMethodName(image.compressionMethod)}
-                    </div>
+                        <span class="compression-ratio">节省 ${image.compressionRatio}%</span>
+                    
+                    </div>                
                 </div>
             </div>
         `;
