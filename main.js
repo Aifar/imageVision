@@ -61,9 +61,10 @@ app.on('activate', () => {
 });
 
 // IPC 处理器
-ipcMain.handle('select-directory', async () => {
+ipcMain.handle('select-directory', async (event, currentPath) => {
     const result = await dialog.showOpenDialog(mainWindow, {
-        properties: ['openDirectory']
+        properties: ['openDirectory'],
+        defaultPath: currentPath || undefined
     });
 
     if (!result.canceled && result.filePaths.length > 0) {

@@ -111,7 +111,8 @@ class ImageViewer {
 
     async selectFolder() {
         try {
-            const folderPath = await window.electronAPI.selectDirectory();
+            // 传递当前目录作为默认路径
+            const folderPath = await window.electronAPI.selectDirectory(this.currentDirectory);
             if (folderPath) {
                 this.currentDirectory = folderPath;
                 this.updateFolderDisplay(folderPath);
@@ -554,7 +555,8 @@ class ImageViewer {
 
     async selectCompressedFolder() {
         try {
-            const folderPath = await window.electronAPI.selectDirectory();
+            console.info('选择压缩文件夹:', this.compressedFolderPath);
+            const folderPath = await window.electronAPI.selectDirectory(this.compressedFolderPath);
             if (folderPath) {
                 this.compressedFolderPath = folderPath;
                 this.updateCompressedFolderButton();

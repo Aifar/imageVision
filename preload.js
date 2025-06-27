@@ -1,7 +1,7 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electronAPI', {
-    selectDirectory: () => ipcRenderer.invoke('select-directory'),
+    selectDirectory: (defaultPath) => ipcRenderer.invoke('select-directory', defaultPath),
     getDefaultCompressedFolder: () => ipcRenderer.invoke('get-default-compressed-folder'),
     searchImages: (directoryPath, searchTerm) => ipcRenderer.invoke('search-images', directoryPath, searchTerm),
     getFileSize: (size) => ipcRenderer.invoke('get-file-size', size),
