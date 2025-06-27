@@ -15,11 +15,7 @@
       <!-- 顶部工具栏 -->
       <header class="toolbar">
         <div class="toolbar-left">
-          <button id="selectFolderBtn" class="btn btn-primary">
-            <i class="fas fa-folder-open"></i>
-            选择文件夹
-          </button>
-          <div class="current-folder" id="currentFolder">
+          <div class="current-folder clickable" id="currentFolder">
             <i class="fas fa-folder"></i>
             <span>请选择图片文件夹</span>
           </div>
@@ -27,17 +23,10 @@
         <div class="toolbar-right">
           <div class="compression-controls" style="display: none">
             <div class="folder-setting">
-              <label for="compressedFolderPath">保存到:</label>
-              <input
-                type="text"
-                id="compressedFolderPath"
-                class="folder-input"
-                placeholder="选择压缩图片保存文件夹"
-                readonly
-              />
-              <button id="selectCompressedFolderBtn" class="btn btn-secondary">
+              <label for="compressedFolderBtn">保存到:</label>
+              <button id="compressedFolderBtn" class="btn btn-folder">
                 <i class="fas fa-folder"></i>
-                选择文件夹
+                <span id="compressedFolderText">选择</span>
               </button>
             </div>
             <div class="compression-settings">

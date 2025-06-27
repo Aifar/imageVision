@@ -9,6 +9,7 @@ class ImageViewer {
         this.maxConcurrentCompressions = 100;
         this.currentCompressions = 0;
         this.compressionQueue = [];
+        this.isCompressing = false;
 
         this.initializeElements();
         this.bindEvents();
@@ -17,7 +18,6 @@ class ImageViewer {
 
     initializeElements() {
         // 获取DOM元素
-        this.selectFolderBtn = document.getElementById('selectFolderBtn');
         this.currentFolder = document.getElementById('currentFolder');
         this.searchInput = document.getElementById('searchInput');
         this.clearSearch = document.getElementById('clearSearch');
@@ -30,8 +30,8 @@ class ImageViewer {
 
         // 压缩控件元素
         this.compressionControls = document.querySelector('.compression-controls');
-        this.selectCompressedFolderBtn = document.getElementById('selectCompressedFolderBtn');
-        this.compressedFolderPath = document.getElementById('compressedFolderPath');
+        this.compressedFolderBtn = document.getElementById('compressedFolderBtn');
+        this.compressedFolderText = document.getElementById('compressedFolderText');
         this.compressionQuality = document.getElementById('compressionQuality');
         this.qualityValue = document.getElementById('qualityValue');
 
@@ -56,18 +56,25 @@ class ImageViewer {
         this.compressionSaved = document.getElementById('compressionSaved');
         this.openCompressedFolder = document.getElementById('openCompressedFolder');
         this.closeCompressionModal = document.getElementById('closeCompressionModal');
+
+        // 压缩文件夹路径存储
+        this.compressedFolderPath = '';
     }
 
     bindEvents() {
         // 选择文件夹
-        this.selectFolderBtn.addEventListener('click', () => this.selectFolder());
+        this.currentFolder.addEventListener('click', () => {
+            if (!this.currentFolder.classList.contains('disabled')) {
+                this.selectFolder();
+            }
+        });
 
         // 搜索功能
         this.searchInput.addEventListener('input', (e) => this.handleSearch(e.target.value));
         this.clearSearch.addEventListener('click', () => this.clearSearchInput());
 
         // 压缩功能
-        this.selectCompressedFolderBtn.addEventListener('click', () => this.selectCompressedFolder());
+        this.compressedFolderBtn.addEventListener('click', () => this.selectCompressedFolder());
         this.compressionQuality.addEventListener('input', (e) => {
             this.qualityValue.textContent = `${e.target.value}%`;
         });
@@ -107,7 +114,7 @@ class ImageViewer {
             const folderPath = await window.electronAPI.selectDirectory();
             if (folderPath) {
                 this.currentDirectory = folderPath;
-                this.updateCurrentFolderDisplay(folderPath);
+                this.updateFolderDisplay(folderPath);
                 this.searchInput.disabled = false;
                 await this.loadImages();
             }
@@ -117,12 +124,23 @@ class ImageViewer {
         }
     }
 
-    updateCurrentFolderDisplay(folderPath) {
-        const folderName = folderPath.split(/[/\\]/).pop();
-        this.currentFolder.innerHTML = `
-            <i class="fas fa-folder"></i>
-            <span title="${folderPath}">${folderName}</span>
-        `;
+    updateFolderDisplay(folderPath) {
+        let folderName;
+        if (folderPath) {
+            // 使用JavaScript字符串方法获取文件夹名称，兼容Windows和Unix路径
+            folderName = folderPath.split(/[/\\]/).pop() || folderPath;
+        } else {
+            folderName = '请选择图片文件夹';
+        }
+
+        this.currentFolder.querySelector('span').textContent = folderName;
+        this.folderPath.textContent = folderPath || '';
+
+        if (folderPath) {
+            this.currentFolder.classList.add('has-folder');
+        } else {
+            this.currentFolder.classList.remove('has-folder');
+        }
     }
 
     async loadImages() {
@@ -144,16 +162,17 @@ class ImageViewer {
                 this.compressionControls.style.display = 'flex';
 
                 // 设置默认压缩文件夹路径为Documents/imagevision
-                if (!this.compressedFolderPath.value) {
+                if (!this.compressedFolderPath) {
                     try {
                         const defaultFolder = await window.electronAPI.getDefaultCompressedFolder();
-                        this.compressedFolderPath.value = defaultFolder;
+                        this.compressedFolderPath = defaultFolder;
                     } catch (error) {
                         console.error('获取默认压缩文件夹失败:', error);
                         // 如果获取失败，使用当前目录作为备选
-                        this.compressedFolderPath.value = this.currentDirectory;
+                        this.compressedFolderPath = this.currentDirectory;
                     }
                 }
+                this.updateCompressedFolderButton();
             }
         } catch (error) {
             console.error('加载图片失败:', error);
@@ -403,15 +422,21 @@ class ImageViewer {
 
     // 打开压缩文件夹
     openCompressedFolder() {
-        if (this.compressedFolderPath.value) {
+        if (this.compressedFolderPath) {
             // 这里需要调用主进程来打开文件夹
             // 暂时使用系统默认方式
-            window.open(`file://${this.compressedFolderPath.value}`);
+            window.open(`file://${this.compressedFolderPath}`);
         }
     }
 
     // 并发压缩控制方法
     async processCompressionQueue() {
+        // 如果有任务在处理或队列中有任务，设置压缩状态
+        if ((this.currentCompressions > 0 || this.compressionQueue.length > 0) && !this.isCompressing) {
+            this.isCompressing = true;
+            this.setCompressionState(true);
+        }
+
         while (this.compressionQueue.length > 0 && this.currentCompressions < this.maxConcurrentCompressions) {
             const { card, imagePath } = this.compressionQueue.shift();
             this.currentCompressions++;
@@ -421,6 +446,12 @@ class ImageViewer {
                 this.currentCompressions--;
                 // 压缩完成后，继续处理队列
                 this.processCompressionQueue();
+
+                // 如果所有压缩任务都完成了，解除压缩状态
+                if (this.currentCompressions === 0 && this.compressionQueue.length === 0 && this.isCompressing) {
+                    this.isCompressing = false;
+                    this.setCompressionState(false);
+                }
             });
         }
     }
@@ -442,7 +473,7 @@ class ImageViewer {
     async compressImageInBackground(card, imagePath) {
         try {
             // 检查是否设置了压缩文件夹
-            if (!this.compressedFolderPath.value) {
+            if (!this.compressedFolderPath) {
                 // 如果没有设置压缩文件夹，显示提示
                 const compressionInfo = card.querySelector('.compression-info');
                 if (compressionInfo) {
@@ -467,7 +498,7 @@ class ImageViewer {
             // 调用后台压缩接口
             const result = await window.electronAPI.compressSingleImage(imagePath, {
                 quality: parseInt(this.compressionQuality.value),
-                compressedDir: this.compressedFolderPath.value
+                compressedDir: this.compressedFolderPath
             });
 
             if (result.success) {
@@ -525,7 +556,8 @@ class ImageViewer {
         try {
             const folderPath = await window.electronAPI.selectDirectory();
             if (folderPath) {
-                this.compressedFolderPath.value = folderPath;
+                this.compressedFolderPath = folderPath;
+                this.updateCompressedFolderButton();
             }
         } catch (error) {
             console.error('选择压缩文件夹失败:', error);
@@ -533,11 +565,39 @@ class ImageViewer {
         }
     }
 
+    // 更新压缩文件夹按钮显示
+    updateCompressedFolderButton() {
+        if (this.compressedFolderPath) {
+            // 显示文件夹名称
+            const folderName = this.compressedFolderPath.split(/[/\\]/).pop();
+            this.compressedFolderText.textContent = folderName;
+            this.compressedFolderBtn.className = 'btn btn-folder has-folder';
+            this.compressedFolderBtn.title = this.compressedFolderPath;
+        } else {
+            // 显示选择提示
+            this.compressedFolderText.textContent = '选择';
+            this.compressedFolderBtn.className = 'btn btn-folder';
+            this.compressedFolderBtn.title = '点击选择压缩文件夹';
+        }
+    }
+
+    // 设置压缩状态控制
+    setCompressionState(isCompressing) {
+        if (isCompressing) {
+            this.currentFolder.classList.add('disabled');
+            this.compressedFolderBtn.disabled = true;
+        } else {
+            this.currentFolder.classList.remove('disabled');
+            this.compressedFolderBtn.disabled = false;
+        }
+    }
+
     async initializeDefaultSettings() {
         try {
             // 设置默认压缩文件夹路径
             const defaultFolder = await window.electronAPI.getDefaultCompressedFolder();
-            this.compressedFolderPath.value = defaultFolder;
+            this.compressedFolderPath = defaultFolder;
+            this.updateCompressedFolderButton();
         } catch (error) {
             console.error('初始化默认设置失败:', error);
         }
