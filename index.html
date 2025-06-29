@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>图片查看器</title>
+    <title data-i18n="appTitle">图片查看器</title>
     <link rel="stylesheet" href="styles.css" />
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
@@ -17,20 +17,24 @@
         <div class="toolbar-left">
           <div class="current-folder clickable" id="currentFolder">
             <i class="fas fa-folder"></i>
-            <span>请选择图片文件夹</span>
+            <span data-i18n="selectFolder">请选择图片文件夹</span>
           </div>
         </div>
         <div class="toolbar-right">
           <div class="compression-controls">
             <div class="folder-setting">
-              <label for="compressedFolderBtn">保存到:</label>
+              <label for="compressedFolderBtn" data-i18n="saveTo"
+                >保存到:</label
+              >
               <button id="compressedFolderBtn" class="btn btn-folder">
                 <i class="fas fa-folder"></i>
-                <span id="compressedFolderText">选择</span>
+                <span id="compressedFolderText" data-i18n="selectSaveFolder"
+                  >选择</span
+                >
               </button>
             </div>
             <div class="compression-settings">
-              <label for="compressionQuality">质量:</label>
+              <label for="compressionQuality" data-i18n="quality">质量:</label>
               <input
                 type="range"
                 id="compressionQuality"
@@ -46,12 +50,23 @@
             <input
               type="text"
               id="searchInput"
+              data-i18n-placeholder="searchPlaceholder"
               placeholder="搜索图片名称..."
               disabled
             />
             <button id="clearSearch" class="clear-btn" style="display: none">
               <i class="fas fa-times"></i>
             </button>
+          </div>
+          <!-- 语言选择器 -->
+          <div class="language-selector">
+            <button id="languageBtn" class="btn btn-language">
+              <span id="currentLanguageFlag">🇨🇳</span>
+              <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="language-dropdown" id="languageDropdown">
+              <!-- 动态生成语言选项 -->
+            </div>
           </div>
         </div>
       </header>
@@ -65,7 +80,7 @@
           style="display: none"
         >
           <div class="loading-spinner"></div>
-          <p>正在扫描图片...</p>
+          <p data-i18n="loadingImages">正在扫描图片...</p>
         </div>
 
         <!-- 空状态 -->
@@ -73,8 +88,10 @@
           <div class="empty-icon">
             <i class="fas fa-images"></i>
           </div>
-          <h3>开始浏览图片</h3>
-          <p>点击"选择文件夹"来浏览您的图片集合</p>
+          <h3 data-i18n="startBrowsing">开始浏览图片</h3>
+          <p data-i18n="startBrowsingDesc">
+            点击"选择文件夹"来浏览您的图片集合
+          </p>
         </div>
 
         <!-- 图片网格 -->
@@ -103,22 +120,24 @@
           <h3 id="modalTitle"></h3>
           <div class="modal-details">
             <div class="detail-item">
-              <span class="label">原始尺寸:</span>
+              <span class="label" data-i18n="originalSize">原始尺寸:</span>
               <span id="modalOriginalSize"></span>
             </div>
             <div class="detail-item">
-              <span class="label">文件大小:</span>
+              <span class="label" data-i18n="fileSize">文件大小:</span>
               <span id="modalFileSize"></span>
             </div>
             <div class="detail-item">
-              <span class="label">压缩建议:</span>
+              <span class="label" data-i18n="compressionSuggestion"
+                >压缩建议:</span
+              >
               <span id="modalCompressionSuggestion"></span>
             </div>
           </div>
           <div class="compression-actions" style="display: none">
             <button id="compressSingleBtn" class="btn btn-primary">
               <i class="fas fa-compress-alt"></i>
-              压缩此图片
+              <span data-i18n="compressThisImage">压缩此图片</span>
             </button>
           </div>
         </div>
@@ -129,7 +148,7 @@
     <div class="modal" id="compressionModal">
       <div class="modal-content compression-modal">
         <div class="compression-header">
-          <h3>正在压缩图片...</h3>
+          <h3 data-i18n="compressing">正在压缩图片...</h3>
           <div class="compression-progress">
             <div class="progress-bar">
               <div class="progress-fill" id="compressionProgress"></div>
@@ -145,34 +164,35 @@
           id="compressionResults"
           style="display: none"
         >
-          <h4>压缩完成</h4>
+          <h4 data-i18n="compressionComplete">压缩完成</h4>
           <div class="results-summary">
             <div class="result-item">
-              <span class="label">成功:</span>
+              <span class="label" data-i18n="success">成功:</span>
               <span id="compressionSuccess">0</span>
             </div>
             <div class="result-item">
-              <span class="label">失败:</span>
+              <span class="label" data-i18n="failed">失败:</span>
               <span id="compressionFailed">0</span>
             </div>
             <div class="result-item">
-              <span class="label">节省空间:</span>
+              <span class="label" data-i18n="spaceSaved">节省空间:</span>
               <span id="compressionSaved">0 KB</span>
             </div>
           </div>
           <div class="compression-actions">
             <button id="openCompressedFolder" class="btn btn-primary">
               <i class="fas fa-folder-open"></i>
-              打开压缩文件夹
+              <span data-i18n="openCompressedFolder">打开压缩文件夹</span>
             </button>
             <button id="closeCompressionModal" class="btn btn-secondary">
-              关闭
+              <span data-i18n="close">关闭</span>
             </button>
           </div>
         </div>
       </div>
     </div>
 
+    <script src="languages.js"></script>
     <script src="renderer.js"></script>
   </body>
 </html>

@@ -11,9 +11,21 @@ class ImageViewer {
         this.compressionQueue = [];
         this.isCompressing = false;
 
-        this.initializeElements();
-        this.bindEvents();
-        this.initializeDefaultSettings();
+        // 等待i18n初始化完成
+        this.waitForI18n().then(() => {
+            this.initializeElements();
+            this.bindEvents();
+            this.initializeDefaultSettings();
+            this.initializeLanguageSelector();
+            this.updateAllTexts();
+        });
+    }
+
+    async waitForI18n() {
+        // 等待i18n实例可用
+        while (!window.i18n) {
+            await new Promise(resolve => setTimeout(resolve, 10));
+        }
     }
 
     initializeElements() {
@@ -34,6 +46,12 @@ class ImageViewer {
         this.compressedFolderText = document.getElementById('compressedFolderText');
         this.compressionQuality = document.getElementById('compressionQuality');
         this.qualityValue = document.getElementById('qualityValue');
+
+        // 语言选择器元素
+        this.languageBtn = document.getElementById('languageBtn');
+        this.languageDropdown = document.getElementById('languageDropdown');
+        this.languageSelector = document.querySelector('.language-selector');
+        this.currentLanguageFlag = document.getElementById('currentLanguageFlag');
 
         // 模态框元素
         this.imageModal = document.getElementById('imageModal');
@@ -61,6 +79,87 @@ class ImageViewer {
         this.compressedFolderPath = '';
     }
 
+    initializeLanguageSelector() {
+        // 创建语言选项
+        const languages = window.i18n.getAllLanguages();
+        this.languageDropdown.innerHTML = '';
+
+        languages.forEach(lang => {
+            const option = document.createElement('button');
+            option.className = 'language-option';
+            option.dataset.lang = lang.code;
+
+            if (lang.code === window.i18n.getCurrentLanguage()) {
+                option.classList.add('active');
+            }
+
+            option.innerHTML = `
+                <span class="flag">${lang.flag}</span>
+                <span class="name">${lang.name}</span>
+            `;
+
+            option.addEventListener('click', () => {
+                this.changeLanguage(lang.code);
+            });
+
+            this.languageDropdown.appendChild(option);
+        });
+
+        // 更新当前语言显示
+        this.updateCurrentLanguageDisplay();
+    }
+
+    updateCurrentLanguageDisplay() {
+        const currentLang = window.i18n.getCurrentLanguage();
+        const languages = window.i18n.getAllLanguages();
+        const langInfo = languages.find(lang => lang.code === currentLang);
+
+        if (langInfo) {
+            this.currentLanguageFlag.textContent = langInfo.flag;
+        }
+    }
+
+    changeLanguage(langCode) {
+        window.i18n.setLanguage(langCode);
+        this.updateCurrentLanguageDisplay();
+        this.updateAllTexts();
+        this.toggleLanguageDropdown(false);
+
+        // 更新语言选项的active状态
+        this.languageDropdown.querySelectorAll('.language-option').forEach(option => {
+            option.classList.toggle('active', option.dataset.lang === langCode);
+        });
+    }
+
+    toggleLanguageDropdown(show = null) {
+        const isActive = this.languageSelector.classList.contains('active');
+        const shouldShow = show !== null ? show : !isActive;
+
+        this.languageSelector.classList.toggle('active', shouldShow);
+    }
+
+    updateAllTexts() {
+        // 更新所有带有data-i18n属性的元素
+        document.querySelectorAll('[data-i18n]').forEach(element => {
+            const key = element.getAttribute('data-i18n');
+            element.textContent = window.i18n.t(key);
+        });
+
+        // 更新所有带有data-i18n-placeholder属性的元素
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+            const key = element.getAttribute('data-i18n-placeholder');
+            element.placeholder = window.i18n.t(key);
+        });
+
+        // 更新页面标题
+        document.title = window.i18n.t('appTitle');
+
+        // 更新动态内容
+        if (this.allImages.length > 0) {
+            this.updateStats(this.filteredImages.length, this.currentDirectory);
+        }
+    }
+
     bindEvents() {
         // 选择文件夹
         this.currentFolder.addEventListener('click', () => {
@@ -79,6 +178,24 @@ class ImageViewer {
             this.qualityValue.textContent = `${e.target.value}%`;
         });
 
+        // 语言选择器事件
+        this.languageBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.toggleLanguageDropdown();
+        });
+
+        // 点击外部关闭语言下拉菜单
+        document.addEventListener('click', (e) => {
+            if (!this.languageSelector.contains(e.target)) {
+                this.toggleLanguageDropdown(false);
+            }
+        });
+
+        // 语言改变事件监听
+        window.addEventListener('languageChanged', () => {
+            this.updateAllTexts();
+        });
+
         // 压缩进度对话框事件
         this.closeCompressionModal.addEventListener('click', () => this.closeCompressionModal());
         this.openCompressedFolder.addEventListener('click', () => this.openCompressedFolder());
@@ -93,6 +210,7 @@ class ImageViewer {
             if (e.key === 'Escape') {
                 this.closeModal();
                 this.closeCompressionModal();
+                this.toggleLanguageDropdown(false);
             }
             if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
                 e.preventDefault();
@@ -121,7 +239,7 @@ class ImageViewer {
             }
         } catch (error) {
             console.error('选择文件夹失败:', error);
-            this.showError('选择文件夹失败，请重试。');
+            this.showError(window.i18n.t('selectFolderError'));
         }
     }
 
@@ -177,7 +295,7 @@ class ImageViewer {
             }
         } catch (error) {
             console.error('加载图片失败:', error);
-            this.showError('加载图片失败，请检查文件夹权限。');
+            this.showError(window.i18n.t('loadImagesError'));
         } finally {
             this.showLoading(false);
         }
@@ -321,9 +439,9 @@ class ImageViewer {
         const compressedImages = this.allImages.filter(img => img.isCompressed).length;
         const compressionProgress = totalImages > 0 ? Math.round((compressedImages / totalImages) * 100) : 0;
 
-        this.imageCount.textContent = `${count} 张图片`;
+        this.imageCount.textContent = window.i18n.t('imagesCount', { count: count });
         if (this.currentSearchTerm) {
-            this.imageCount.textContent += ` (搜索: "${this.currentSearchTerm}")`;
+            this.imageCount.textContent += ` (${window.i18n.t('searchPlaceholder')}: "${this.currentSearchTerm}")`;
         }
 
         // 添加压缩进度信息
@@ -332,15 +450,15 @@ class ImageViewer {
             const processingCount = this.currentCompressions || 0;
 
             if (compressionProgress < 100) {
-                this.imageCount.textContent += ` | 压缩进度: ${compressionProgress}% (${compressedImages}/${totalImages})`;
+                this.imageCount.textContent += ` | ${window.i18n.t('compressionProgress', { progress: compressionProgress, current: compressedImages, total: totalImages })}`;
                 if (queueCount > 0) {
-                    this.imageCount.textContent += ` | 队列: ${queueCount}`;
+                    this.imageCount.textContent += ` | ${window.i18n.t('queue')}: ${queueCount}`;
                 }
                 if (processingCount > 0) {
-                    this.imageCount.textContent += ` | 压缩中: ${processingCount}`;
+                    this.imageCount.textContent += ` | ${window.i18n.t('compressing')}: ${processingCount}`;
                 }
             } else {
-                this.imageCount.textContent += ` | 全部压缩完成`;
+                this.imageCount.textContent += ` | ${window.i18n.t('allCompressed')}`;
             }
         }
 
@@ -370,16 +488,16 @@ class ImageViewer {
                 <div class="empty-icon">
                     <i class="fas fa-search"></i>
                 </div>
-                <h3>未找到匹配的图片</h3>
-                <p>尝试调整搜索关键词或选择其他文件夹</p>
+                <h3>${window.i18n.t('noMatchingImages')}</h3>
+                <p>${window.i18n.t('noMatchingImagesDesc')}</p>
             `;
         } else {
             this.emptyState.innerHTML = `
                 <div class="empty-icon">
                     <i class="fas fa-images"></i>
                 </div>
-                <h3>文件夹中没有图片</h3>
-                <p>此文件夹中没有找到支持的图片格式</p>
+                <h3>${window.i18n.t('noImagesInFolder')}</h3>
+                <p>${window.i18n.t('noImagesFoundDesc')}</p>
             `;
         }
     }
@@ -392,7 +510,7 @@ class ImageViewer {
             <div class="empty-icon">
                 <i class="fas fa-exclamation-triangle"></i>
             </div>
-            <h3>出现错误</h3>
+            <h3>${window.i18n.t('errorOccurred')}</h3>
             <p>${message}</p>
         `;
     }

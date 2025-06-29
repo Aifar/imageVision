@@ -891,4 +891,515 @@ body {
         font-size: 11px;
         padding: 3px 6px;
     }
+}
+
+/* 语言选择器样式 */
+.language-selector {
+    position: relative;
+    margin-left: 10px;
+}
+
+.btn-language {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    min-width: 60px;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-language::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.btn-language:hover::before {
+    left: 100%;
+}
+
+.btn-language:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+    background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+}
+
+.btn-language:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+#currentLanguageFlag {
+    font-size: 16px;
+    line-height: 1;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+}
+
+.btn-language i {
+    font-size: 12px;
+    transition: transform 0.3s ease;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.language-selector.active .btn-language i {
+    transform: rotate(180deg);
+}
+
+.language-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    z-index: 1000;
+    min-width: 200px;
+    max-height: 320px;
+    overflow-y: auto;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px) scale(0.95);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.language-selector.active .language-dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+
+.language-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    color: #374151;
+    font-size: 14px;
+    font-weight: 500;
+    position: relative;
+    overflow: hidden;
+}
+
+.language-option:first-child {
+    border-radius: 12px 12px 0 0;
+}
+
+.language-option:last-child {
+    border-radius: 0 0 12px 12px;
+}
+
+.language-option:hover {
+    background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+    color: #1f2937;
+    transform: translateX(4px);
+}
+
+.language-option.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.language-option.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(to bottom, #fbbf24, #f59e0b);
+    border-radius: 0 2px 2px 0;
+}
+
+.rtl .language-option.active::before {
+    left: auto;
+    right: 0;
+    border-radius: 2px 0 0 2px;
+}
+
+.language-option .flag {
+    font-size: 18px;
+    line-height: 1;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+}
+
+.language-option .name {
+    flex: 1;
+    font-weight: 500;
+}
+
+.language-option:hover .flag {
+    transform: scale(1.1);
+    transition: transform 0.2s ease;
+}
+
+.language-option.active .flag {
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.2));
+}
+
+/* RTL支持 */
+.rtl {
+    direction: rtl;
+}
+
+.rtl .toolbar {
+    flex-direction: row-reverse;
+}
+
+.rtl .toolbar-left {
+    margin-left: 0;
+    margin-right: auto;
+}
+
+.rtl .toolbar-right {
+    margin-right: 0;
+    margin-left: auto;
+    flex-direction: row-reverse;
+}
+
+.rtl .language-selector {
+    margin-right: 0;
+    margin-left: 15px;
+}
+
+.rtl .btn-language {
+    flex-direction: row-reverse;
+    gap: 8px;
+}
+
+.rtl .language-dropdown {
+    right: 0;
+    left: auto;
+}
+
+.rtl .language-option {
+    flex-direction: row-reverse;
+    text-align: right;
+}
+
+.rtl .language-option:hover {
+    transform: translateX(-4px);
+}
+
+.rtl .compression-controls {
+    flex-direction: row-reverse;
+}
+
+.rtl .compression-settings {
+    margin-right: 0;
+    margin-left: 20px;
+}
+
+.rtl .folder-setting {
+    margin-right: 0;
+    margin-left: 20px;
+}
+
+.rtl .search-container {
+    flex-direction: row-reverse;
+}
+
+.rtl .search-icon {
+    right: auto;
+    left: 12px;
+}
+
+.rtl .clear-btn {
+    left: auto;
+    right: 12px;
+}
+
+.rtl .modal-details {
+    text-align: right;
+}
+
+.rtl .detail-item {
+    flex-direction: row-reverse;
+}
+
+.rtl .detail-item .label {
+    margin-left: 0;
+    margin-right: 10px;
+}
+
+.rtl .compression-actions {
+    flex-direction: row-reverse;
+}
+
+.rtl .results-summary {
+    text-align: right;
+}
+
+.rtl .result-item {
+    flex-direction: row-reverse;
+}
+
+.rtl .result-item .label {
+    margin-left: 0;
+    margin-right: 10px;
+}
+
+/* 响应式设计 - 移动端 */
+@media (max-width: 768px) {
+    .toolbar-right {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .language-selector {
+        order: -1;
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+    
+    .rtl .language-selector {
+        margin-left: 0;
+        margin-bottom: 10px;
+    }
+    
+    .btn-language {
+        padding: 10px 14px;
+        font-size: 16px;
+        min-width: 70px;
+    }
+    
+    #currentLanguageFlag {
+        font-size: 18px;
+    }
+    
+    .language-dropdown {
+        right: 0;
+        left: auto;
+        min-width: 180px;
+        max-height: 280px;
+        border-radius: 16px;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    }
+    
+    .rtl .language-dropdown {
+        left: auto;
+        right: 0;
+    }
+    
+    .language-option {
+        padding: 14px 18px;
+        font-size: 16px;
+    }
+    
+    .language-option .flag {
+        font-size: 20px;
+    }
+    
+    .language-option:hover {
+        transform: translateX(6px);
+    }
+    
+    .rtl .language-option:hover {
+        transform: translateX(-6px);
+    }
+}
+
+/* 超小屏幕适配 */
+@media (max-width: 480px) {
+    .language-dropdown {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        right: auto;
+        transform: translate(-50%, -50%) scale(0.95);
+        min-width: 280px;
+        max-height: 60vh;
+        border-radius: 20px;
+    }
+    
+    .language-selector.active .language-dropdown {
+        transform: translate(-50%, -50%) scale(1);
+    }
+    
+    .rtl .language-dropdown {
+        left: 50%;
+        right: auto;
+        transform: translate(-50%, -50%) scale(0.95);
+    }
+    
+    .rtl .language-selector.active .language-dropdown {
+        transform: translate(-50%, -50%) scale(1);
+    }
+    
+    .rtl .language-option {
+        flex-direction: row-reverse;
+        text-align: right;
+    }
+    
+    .language-option {
+        padding: 16px 20px;
+        font-size: 18px;
+    }
+    
+    .language-option .flag {
+        font-size: 22px;
+    }
+    
+    /* 添加遮罩层 */
+    .language-selector.active::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.3);
+        z-index: 999;
+        backdrop-filter: blur(2px);
+    }
+}
+
+/* RTL 滚动条样式 */
+.rtl .language-dropdown::-webkit-scrollbar {
+    width: 6px;
+}
+
+.rtl .language-dropdown::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.rtl .language-dropdown::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, #667eea, #764ba2);
+    border-radius: 3px;
+}
+
+.rtl .language-dropdown::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(to bottom, #7c3aed, #a855f7);
+}
+
+/* 动画优化 - 移除重复定义，使用上面的波纹效果 */
+
+/* 深色主题适配 */
+@media (prefers-color-scheme: dark) {
+    .language-dropdown {
+        background: #1f2937;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .language-option {
+        color: #e5e7eb;
+    }
+    
+    .language-option:hover {
+        background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+        color: #f9fafb;
+    }
+    
+    .language-option.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    
+    .btn-language {
+        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-language:hover {
+        box-shadow: 0 4px 16px rgba(102, 126, 234, 0.5);
+    }
+}
+
+/* 语言选择器动画增强 */
+.language-dropdown::-webkit-scrollbar {
+    width: 6px;
+}
+
+.language-dropdown::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.language-dropdown::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, #667eea, #764ba2);
+    border-radius: 3px;
+}
+
+.language-dropdown::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(to bottom, #7c3aed, #a855f7);
+}
+
+/* 语言选择器入场动画 */
+@keyframes languageDropdownEnter {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.9);
+    }
+    50% {
+        opacity: 0.8;
+        transform: translateY(-5px) scale(0.98);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.language-selector.active .language-dropdown {
+    animation: languageDropdownEnter 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 语言选项波纹效果 - 这些属性已在上面定义，这里只添加波纹效果 */
+
+.language-option::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: radial-gradient(circle, rgba(102, 126, 234, 0.3) 0%, transparent 70%);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s ease, height 0.6s ease;
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.language-option:active::after {
+    width: 200px;
+    height: 200px;
+}
+
+/* 语言按钮脉冲效果 */
+@keyframes pulse {
+    0% {
+        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    }
+    50% {
+        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.5), 0 0 0 4px rgba(102, 126, 234, 0.1);
+    }
+    100% {
+        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    }
+}
+
+.language-selector.active .btn-language {
+    animation: pulse 2s infinite;
 } 
