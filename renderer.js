@@ -10,6 +10,8 @@ class ImageViewer {
         this.currentCompressions = 0;
         this.compressionQueue = [];
         this.isCompressing = false;
+        // 压缩文件夹路径存储
+        this.compressedFolderPath = '';
 
         // 等待i18n初始化完成
         this.waitForI18n().then(() => {
@@ -75,8 +77,7 @@ class ImageViewer {
         this.openCompressedFolder = document.getElementById('openCompressedFolder');
         this.closeCompressionModal = document.getElementById('closeCompressionModal');
 
-        // 压缩文件夹路径存储
-        this.compressedFolderPath = '';
+
     }
 
     initializeLanguageSelector() {
@@ -269,7 +270,22 @@ class ImageViewer {
         this.hideEmptyState();
 
         try {
-            const images = await window.electronAPI.searchImages(this.currentDirectory, '');
+            // 设置默认压缩文件夹路径为Documents/imagevision
+            if (!this.compressedFolderPath) {
+                try {
+                    const defaultFolder = await window.electronAPI.getDefaultCompressedFolder();
+                    this.compressedFolderPath = defaultFolder;
+
+                } catch (error) {
+                    console.error('获取默认压缩文件夹失败:', error);
+                    // 如果获取失败，使用当前目录作为备选
+                    this.compressedFolderPath = this.currentDirectory;
+                }
+            }
+
+            console.log('默认压缩文件夹路径:', this.compressedFolderPath);
+
+            const images = await window.electronAPI.searchImages(this.currentDirectory, this.compressedFolderPath, '');
             this.allImages = images;
             this.filteredImages = images;
 
@@ -282,17 +298,6 @@ class ImageViewer {
                 // 显示压缩控件
                 this.compressionControls.style.display = 'flex';
 
-                // 设置默认压缩文件夹路径为Documents/imagevision
-                if (!this.compressedFolderPath) {
-                    try {
-                        const defaultFolder = await window.electronAPI.getDefaultCompressedFolder();
-                        this.compressedFolderPath = defaultFolder;
-                    } catch (error) {
-                        console.error('获取默认压缩文件夹失败:', error);
-                        // 如果获取失败，使用当前目录作为备选
-                        this.compressedFolderPath = this.currentDirectory;
-                    }
-                }
                 this.updateCompressedFolderButton();
             }
         } catch (error) {

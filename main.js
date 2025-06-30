@@ -90,10 +90,7 @@ function findImages(dir, imageFiles = []) {
             const stat = fs.statSync(filePath);
 
             if (stat.isDirectory()) {
-                // 跳过 thumb 目录
-                if (path.basename(filePath) !== 'thumb' && path.basename(filePath) !== 'compressed') {
-                    findImages(filePath, imageFiles);
-                }
+                findImages(filePath, imageFiles);
             } else {
                 const ext = path.extname(file).toLowerCase();
                 if (supportedExtensions.includes(ext)) {
@@ -108,27 +105,6 @@ function findImages(dir, imageFiles = []) {
     return imageFiles;
 }
 
-// 确保 thumb 目录存在
-function ensureThumbDirectory(directoryPath) {
-    const thumbDir = path.join(directoryPath, 'thumb');
-    if (!fs.existsSync(thumbDir)) {
-        fs.mkdirSync(thumbDir, { recursive: true });
-    }
-    return thumbDir;
-}
-
-// 生成缩略图文件名
-function generateThumbnailName(originalPath, thumbDir) {
-    const fileName = path.basename(originalPath);
-    const nameWithoutExt = path.parse(fileName).name;
-    const ext = path.parse(fileName).ext;
-
-    // 使用原始文件的相对路径来避免文件名冲突
-    const relativePath = path.relative(path.dirname(thumbDir), originalPath);
-    const safeName = relativePath.replace(/[\\/:]/g, '_');
-
-    return path.join(thumbDir, `${safeName}_thumb${ext}`);
-}
 
 // 图片压缩配置
 const compressionConfig = {
@@ -240,7 +216,7 @@ async function compressImageWithImagemin(inputPath, outputPath, options = {}) {
 
             if (files.length > 0) {
                 // 重命名文件到目标路径
-                const compressedFile = files[0];
+                const File = files[0];
                 if (compressedFile.destinationPath !== outputPath) {
                     fs.renameSync(compressedFile.destinationPath, outputPath);
                 }
@@ -292,7 +268,7 @@ function getCompressedFileSize(filePath) {
     }
 }
 
-ipcMain.handle('search-images', async (event, directoryPath, searchTerm = '') => {
+ipcMain.handle('search-images', async (event, directoryPath, compressedFolderPath, searchTerm = '') => {
     try {
         const files = findImages(directoryPath);
 
@@ -301,12 +277,6 @@ ipcMain.handle('search-images', async (event, directoryPath, searchTerm = '') =>
             filteredFiles = files.filter(file =>
                 path.basename(file).toLowerCase().includes(searchTerm.toLowerCase())
             );
-        }
-
-        // 确保 compressed 目录存在
-        const compressedDir = path.join(directoryPath, 'compressed');
-        if (!fs.existsSync(compressedDir)) {
-            fs.mkdirSync(compressedDir, { recursive: true });
         }
 
         const imageData = await Promise.all(
@@ -322,7 +292,7 @@ ipcMain.handle('search-images', async (event, directoryPath, searchTerm = '') =>
                     // 生成压缩图片路径
                     const nameWithoutExt = path.parse(fileName).name;
                     const ext = path.parse(fileName).ext;
-                    const compressedPath = path.join(compressedDir, `${nameWithoutExt}_compressed${ext}`);
+                    const compressedPath = path.join(compressedFolderPath, `${nameWithoutExt}_compressed${ext}`);
 
                     // 检查压缩图片是否已存在
                     let compressedSize = 0;
