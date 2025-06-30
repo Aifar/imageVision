@@ -61,7 +61,25 @@ const languages = {
             noMatchingImages: '未找到匹配的图片',
             noMatchingImagesDesc: '尝试调整搜索关键词或选择其他文件夹',
             noImagesInFolder: '文件夹中没有图片',
-            errorOccurred: '出现错误'
+            errorOccurred: '出现错误',
+
+            // 压缩状态
+            queueing: '排队中 (第{position}位)',
+            compressingStatus: '压缩中... ({current}/{max})',
+            compressedSize: '压缩后大小:',
+            saved: '节省 {ratio}%',
+            selectCompressedFolderFirst: '请先选择压缩文件夹',
+            waitingCompression: '等待压缩...',
+            imageLoadFailed: '图片加载失败',
+
+            // 压缩方法翻译
+            copy: '复制',
+            existing: '已存在',
+            none: '无压缩',
+
+            // 图片详情
+            dimensions: '尺寸:',
+            originalFileSize: '原图大小:'
         }
     },
 
@@ -117,7 +135,22 @@ const languages = {
             noMatchingImages: 'No matching images found',
             noMatchingImagesDesc: 'Try adjusting search keywords or select another folder',
             noImagesInFolder: 'No images in folder',
-            errorOccurred: 'An error occurred'
+            errorOccurred: 'An error occurred',
+
+            queueing: 'Queuing (#{position})',
+            compressingStatus: 'Compressing... ({current}/{max})',
+            compressedSize: 'Compressed Size:',
+            saved: 'Saved {ratio}%',
+            selectCompressedFolderFirst: 'Please select compressed folder first',
+            waitingCompression: 'Waiting for compression...',
+            imageLoadFailed: 'Image load failed',
+
+            copy: 'Copy',
+            existing: 'Existing',
+            none: 'No Compression',
+
+            dimensions: 'Dimensions:',
+            originalFileSize: 'Original Size:'
         }
     },
 
@@ -173,7 +206,22 @@ const languages = {
             noMatchingImages: '一致する画像が見つかりません',
             noMatchingImagesDesc: '検索キーワードを調整するか、別のフォルダを選択してください',
             noImagesInFolder: 'フォルダに画像がありません',
-            errorOccurred: 'エラーが発生しました'
+            errorOccurred: 'エラーが発生しました',
+
+            queueing: 'キューに追加中 (第{position}位)',
+            compressingStatus: '圧縮中... ({current}/{max})',
+            compressedSize: '圧縮後のサイズ:',
+            saved: '{ratio}%節約',
+            selectCompressedFolderFirst: '最初に圧縮フォルダを選択してください',
+            waitingCompression: '圧縮待ち...',
+            imageLoadFailed: '画像の読み込みに失敗しました',
+
+            copy: 'コピー',
+            existing: '既存',
+            none: '圧縮なし',
+
+            dimensions: 'サイズ:',
+            originalFileSize: '元のファイルサイズ:'
         }
     },
 
@@ -229,7 +277,22 @@ const languages = {
             noMatchingImages: '일치하는 이미지가 없습니다',
             noMatchingImagesDesc: '검색 키워드를 조정하거나 다른 폴더를 선택하세요',
             noImagesInFolder: '폴더에 이미지가 없습니다',
-            errorOccurred: '오류가 발생했습니다'
+            errorOccurred: '오류가 발생했습니다',
+
+            queueing: '대기 중 (#{position}번째)',
+            compressingStatus: '압축 중... ({current}/{max})',
+            compressedSize: '압축된 크기:',
+            saved: '{ratio}% 절약',
+            selectCompressedFolderFirst: '먼저 압축 폴더를 선택하세요',
+            waitingCompression: '압축 대기 중...',
+            imageLoadFailed: '이미지 로드 실패',
+
+            copy: '복사',
+            existing: '기존',
+            none: '압축 없음',
+
+            dimensions: '크기:',
+            originalFileSize: '원본 파일 크기:'
         }
     },
 
@@ -285,7 +348,22 @@ const languages = {
             noMatchingImages: 'Aucune image correspondante trouvée',
             noMatchingImagesDesc: 'Essayez d\'ajuster les mots-clés de recherche ou sélectionnez un autre dossier',
             noImagesInFolder: 'Aucune image dans le dossier',
-            errorOccurred: 'Une erreur s\'est produite'
+            errorOccurred: 'Une erreur s\'est produite',
+
+            queueing: 'En file d\'attente (#{position})',
+            compressingStatus: 'Compression... ({current}/{max})',
+            compressedSize: 'Taille compressée:',
+            saved: '{ratio}% économisé',
+            selectCompressedFolderFirst: 'Veuillez d\'abord sélectionner le dossier compressé',
+            waitingCompression: 'En attente de compression...',
+            imageLoadFailed: 'Échec du chargement de l\'image',
+
+            copy: 'Copier',
+            existing: 'Existant',
+            none: 'Aucune compression',
+
+            dimensions: 'Dimensions:',
+            originalFileSize: 'Taille originale:'
         }
     },
 
@@ -341,7 +419,22 @@ const languages = {
             noMatchingImages: 'Keine passenden Bilder gefunden',
             noMatchingImagesDesc: 'Versuchen Sie, die Suchbegriffe anzupassen oder einen anderen Ordner auszuwählen',
             noImagesInFolder: 'Keine Bilder im Ordner',
-            errorOccurred: 'Ein Fehler ist aufgetreten'
+            errorOccurred: 'Ein Fehler ist aufgetreten',
+
+            queueing: 'In Warteschlange (#{position})',
+            compressingStatus: 'Komprimierung... ({current}/{max})',
+            compressedSize: 'Komprimierte Größe:',
+            saved: '{ratio}% gespart',
+            selectCompressedFolderFirst: 'Bitte wählen Sie zuerst den komprimierten Ordner',
+            waitingCompression: 'Warten auf Komprimierung...',
+            imageLoadFailed: 'Bild konnte nicht geladen werden',
+
+            copy: 'Kopieren',
+            existing: 'Vorhanden',
+            none: 'Keine Komprimierung',
+
+            dimensions: 'Abmessungen:',
+            originalFileSize: 'Originalgröße:'
         }
     },
 
@@ -397,7 +490,22 @@ const languages = {
             noMatchingImages: 'No se encontraron imágenes coincidentes',
             noMatchingImagesDesc: 'Intente ajustar las palabras clave de búsqueda o seleccione otra carpeta',
             noImagesInFolder: 'No hay imágenes en la carpeta',
-            errorOccurred: 'Ocurrió un error'
+            errorOccurred: 'Ocurrió un error',
+
+            queueing: 'En cola (#{position})',
+            compressingStatus: 'Comprimiendo... ({current}/{max})',
+            compressedSize: 'Tamaño comprimido:',
+            saved: '{ratio}% ahorrado',
+            selectCompressedFolderFirst: 'Por favor seleccione primero la carpeta comprimida',
+            waitingCompression: 'Esperando compresión...',
+            imageLoadFailed: 'Error al cargar imagen',
+
+            copy: 'Copiar',
+            existing: 'Existente',
+            none: 'Sin compresión',
+
+            dimensions: 'Dimensiones:',
+            originalFileSize: 'Tamaño original:'
         }
     },
 
@@ -453,7 +561,22 @@ const languages = {
             noMatchingImages: 'Подходящие изображения не найдены',
             noMatchingImagesDesc: 'Попробуйте изменить ключевые слова поиска или выберите другую папку',
             noImagesInFolder: 'В папке нет изображений',
-            errorOccurred: 'Произошла ошибка'
+            errorOccurred: 'Произошла ошибка',
+
+            queueing: 'В очереди (#{position})',
+            compressingStatus: 'Сжатие... ({current}/{max})',
+            compressedSize: 'Сжатый размер:',
+            saved: '{ratio}% сэкономлено',
+            selectCompressedFolderFirst: 'Пожалуйста, сначала выберите папку для сжатых файлов',
+            waitingCompression: 'Ожидание сжатия...',
+            imageLoadFailed: 'Ошибка загрузки изображения',
+
+            copy: 'Копировать',
+            existing: 'Существующий',
+            none: 'Без сжатия',
+
+            dimensions: 'Размеры:',
+            originalFileSize: 'Исходный размер:'
         }
     },
 
@@ -510,7 +633,22 @@ const languages = {
             noMatchingImages: 'لم يتم العثور على صور مطابقة',
             noMatchingImagesDesc: 'حاول تعديل كلمات البحث أو اختر مجلداً آخر',
             noImagesInFolder: 'لا توجد صور في المجلد',
-            errorOccurred: 'حدث خطأ'
+            errorOccurred: 'حدث خطأ',
+
+            queueing: 'في الانتظار (#{position})',
+            compressingStatus: 'ضغط... ({current}/{max})',
+            compressedSize: 'الحجم المضغوط:',
+            saved: 'تم توفير {ratio}%',
+            selectCompressedFolderFirst: 'الرجاء اختيار مجلد الضغط أولاً',
+            waitingCompression: 'في انتظار الضغط...',
+            imageLoadFailed: 'فشل تحميل الصورة',
+
+            copy: 'نسخ',
+            existing: 'موجود',
+            none: 'بدون ضغط',
+
+            dimensions: 'الأبعاد:',
+            originalFileSize: 'الحجم الأصلي:'
         }
     }
 };

@@ -157,6 +157,8 @@ class ImageViewer {
         // 更新动态内容
         if (this.allImages.length > 0) {
             this.updateStats(this.filteredImages.length, this.currentDirectory);
+            // 重新渲染图片卡片以更新动态文本
+            this.renderImages(this.filteredImages);
         }
     }
 
@@ -352,13 +354,13 @@ class ImageViewer {
         // 根据是否已压缩显示不同的压缩信息
         const compressionInfoHtml = image.isCompressed ? `
             <div class="detail-row">
-                <span class="detail-label">压缩后大小:</span>
-                <span>${this.formatFileSize(image.compressedSize)}</span>
-                <span class="compression-ratio">节省 ${image.compressionRatio}%</span>
+                    <span class="detail-label">${window.i18n.t('compressedSize')}</span>
+                    <span>${this.formatFileSize(image.compressedSize)}</span>
+                    <span class="compression-ratio">${window.i18n.t('saved', { ratio: image.compressionRatio })}</span>
             </div>
         ` : `
             <div class="detail-row">
-                <span class="compression-status pending">等待压缩...</span>
+                <span class="compression-status pending">${window.i18n.t('waitingCompression')}</span>
             </div>
         `;
 
@@ -366,16 +368,15 @@ class ImageViewer {
             <div class="image-container">
                 <img src="${originalSrc}" 
                      alt="${image.name}"
-                     loading="lazy"
-                     onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\\'color: white; text-align: center; padding: 20px;\\'>图片加载失败</div>';">
+                     loading="lazy">
             </div>
             <div class="image-info">
                 <div class="image-name" title="${image.name}">${image.name}</div>
                 <div class="image-details">
                     <div class="detail-row">
-                        <span class="detail-label">尺寸:</span>
+                      
                         <span>${image.originalWidth} × ${image.originalHeight}</span>
-                        <span class="detail-label">原图大小:</span>
+                    
                         <span>${this.formatFileSize(image.originalSize)}</span>
                     </div>
                     <div class="compression-info">
@@ -384,6 +385,13 @@ class ImageViewer {
                 </div>
             </div>
         `;
+
+        // 添加图片错误处理
+        const imgElement = card.querySelector('img');
+        imgElement.onerror = () => {
+            imgElement.style.display = 'none';
+            imgElement.parentElement.innerHTML = `<div style="color: white; text-align: center; padding: 20px;">${window.i18n.t('imageLoadFailed')}</div>`;
+        };
 
         // 如果图片还未压缩，添加到压缩队列
         if (!image.isCompressed) {
@@ -529,12 +537,17 @@ class ImageViewer {
     }
 
     getCompressionMethodName(method) {
+        // 确保i18n已经初始化
+        if (!window.i18n) {
+            return method;
+        }
+
         const methodNames = {
             'sharp': 'Sharp',
             'imagemin': 'Imagemin',
-            'copy': '复制',
-            'existing': '已存在',
-            'none': '无压缩'
+            'copy': window.i18n.t('copy'),
+            'existing': window.i18n.t('existing'),
+            'none': window.i18n.t('none')
         };
         return methodNames[method] || method;
     }
@@ -583,7 +596,7 @@ class ImageViewer {
         const compressionStatus = card.querySelector('.compression-status');
         if (compressionStatus && compressionStatus.classList.contains('pending')) {
             const queuePosition = this.compressionQueue.length;
-            compressionStatus.textContent = `排队中 (第${queuePosition}位)`;
+            compressionStatus.textContent = window.i18n.t('queueing', { position: queuePosition });
         }
 
         this.processCompressionQueue();
@@ -598,7 +611,7 @@ class ImageViewer {
                 if (compressionInfo) {
                     compressionInfo.innerHTML = `
                         <div class="detail-row">
-                            <span class="error-message">请先选择压缩文件夹</span>
+                            <span class="error-message">${window.i18n.t('selectCompressedFolderFirst')}</span>
                         </div>
                     `;
                 }
@@ -610,7 +623,10 @@ class ImageViewer {
             const compressionStatus = card.querySelector('.compression-status');
 
             if (compressionStatus) {
-                compressionStatus.textContent = `压缩中... (${this.currentCompressions}/${this.maxConcurrentCompressions})`;
+                compressionStatus.textContent = window.i18n.t('compressingStatus', {
+                    current: this.currentCompressions,
+                    max: this.maxConcurrentCompressions
+                });
                 compressionStatus.className = 'compression-status compressing';
             }
 
@@ -625,9 +641,9 @@ class ImageViewer {
                 if (compressionInfo) {
                     compressionInfo.innerHTML = `
                         <div class="detail-row">
-                            <span class="detail-label">压缩后大小:</span>
+                            <span class="detail-label">${window.i18n.t('compressedSize')}</span>
                             <span>${this.formatFileSize(result.compressedSize)}</span>
-                            <span class="compression-ratio">节省 ${result.compressionRatio}%</span>
+                            <span class="compression-ratio">${window.i18n.t('saved', { ratio: result.compressionRatio })}</span>
                         </div>
                     `;
                 }
