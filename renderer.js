@@ -406,25 +406,9 @@ class ImageViewer {
         this.modalTitle.textContent = image.name;
         this.modalOriginalSize.textContent = `${image.originalWidth} × ${image.originalHeight}`;
         this.modalFileSize.textContent = this.formatFileSize(image.originalSize);
-
-        // 获取压缩建议
-        try {
-            const suggestions = await window.electronAPI.getCompressionSuggestions(image.path);
-            if (suggestions.recommended) {
-                this.modalCompressionSuggestion.textContent = suggestions.reason;
-                this.compressSingleBtn.style.display = 'block';
-                this.compressSingleBtn.parentElement.style.display = 'block';
-            } else {
-                this.modalCompressionSuggestion.textContent = suggestions.reason || '无需压缩';
-                this.compressSingleBtn.style.display = 'none';
-                this.compressSingleBtn.parentElement.style.display = 'none';
-            }
-        } catch (error) {
-            console.error('获取压缩建议失败:', error);
-            this.modalCompressionSuggestion.textContent = '无法获取压缩建议';
-            this.compressSingleBtn.style.display = 'none';
-            this.compressSingleBtn.parentElement.style.display = 'none';
-        }
+        this.modalCompressionSuggestion.textContent = window.i18n.t('saved', { ratio: image.compressionRatio });
+        this.compressSingleBtn.style.display = 'block';
+        this.compressSingleBtn.parentElement.style.display = 'block';
 
         // 加载高质量图片（显示原图）
         this.modalImage.src = `file://${image.path}`;

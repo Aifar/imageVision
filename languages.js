@@ -79,7 +79,13 @@ const languages = {
 
             // 图片详情
             dimensions: '尺寸:',
-            originalFileSize: '原图大小:'
+            originalFileSize: '原图大小:',
+
+            // 压缩信息
+            compressionRatio: '压缩比: {ratio}%',
+            alreadyCompressed: '已压缩',
+            noCompressionNeeded: '无需压缩',
+            unableToGetSuggestions: '无法获取压缩建议'
         }
     },
 
@@ -150,7 +156,12 @@ const languages = {
             none: 'No Compression',
 
             dimensions: 'Dimensions:',
-            originalFileSize: 'Original Size:'
+            originalFileSize: 'Original Size:',
+
+            compressionRatio: 'Compression Ratio: {ratio}%',
+            alreadyCompressed: 'Already Compressed',
+            noCompressionNeeded: 'No Compression Needed',
+            unableToGetSuggestions: 'Unable to get compression suggestions'
         }
     },
 
@@ -221,7 +232,12 @@ const languages = {
             none: '圧縮なし',
 
             dimensions: 'サイズ:',
-            originalFileSize: '元のファイルサイズ:'
+            originalFileSize: '元のファイルサイズ:',
+
+            compressionRatio: '圧縮率: {ratio}%',
+            alreadyCompressed: '既に圧縮済み',
+            noCompressionNeeded: '圧縮不要',
+            unableToGetSuggestions: '圧縮提案を取得できません'
         }
     },
 
@@ -292,7 +308,12 @@ const languages = {
             none: '압축 없음',
 
             dimensions: '크기:',
-            originalFileSize: '원본 파일 크기:'
+            originalFileSize: '원본 파일 크기:',
+
+            compressionRatio: '압축 비율: {ratio}%',
+            alreadyCompressed: '이미 압축됨',
+            noCompressionNeeded: '압축 불필요',
+            unableToGetSuggestions: '압축 제안을 가져올 수 없습니다'
         }
     },
 
@@ -363,7 +384,12 @@ const languages = {
             none: 'Aucune compression',
 
             dimensions: 'Dimensions:',
-            originalFileSize: 'Taille originale:'
+            originalFileSize: 'Taille originale:',
+
+            compressionRatio: 'Taux de compression: {ratio}%',
+            alreadyCompressed: 'Déjà compressé',
+            noCompressionNeeded: 'Aucune compression nécessaire',
+            unableToGetSuggestions: 'Impossible d\'obtenir des suggestions de compression'
         }
     },
 
@@ -434,7 +460,12 @@ const languages = {
             none: 'Keine Komprimierung',
 
             dimensions: 'Abmessungen:',
-            originalFileSize: 'Originalgröße:'
+            originalFileSize: 'Originalgröße:',
+
+            compressionRatio: 'Komprimierungsrate: {ratio}%',
+            alreadyCompressed: 'Bereits komprimiert',
+            noCompressionNeeded: 'Keine Komprimierung erforderlich',
+            unableToGetSuggestions: 'Komprimierungsvorschläge können nicht abgerufen werden'
         }
     },
 
@@ -505,7 +536,12 @@ const languages = {
             none: 'Sin compresión',
 
             dimensions: 'Dimensiones:',
-            originalFileSize: 'Tamaño original:'
+            originalFileSize: 'Tamaño original:',
+
+            compressionRatio: 'Relación de compresión: {ratio}%',
+            alreadyCompressed: 'Ya comprimido',
+            noCompressionNeeded: 'No se necesita compresión',
+            unableToGetSuggestions: 'No se pueden obtener sugerencias de compresión'
         }
     },
 
@@ -576,7 +612,12 @@ const languages = {
             none: 'Без сжатия',
 
             dimensions: 'Размеры:',
-            originalFileSize: 'Исходный размер:'
+            originalFileSize: 'Исходный размер:',
+
+            compressionRatio: 'Степень сжатия: {ratio}%',
+            alreadyCompressed: 'Уже сжато',
+            noCompressionNeeded: 'Сжатие не требуется',
+            unableToGetSuggestions: 'Невозможно получить рекомендации по сжатию'
         }
     },
 
@@ -648,7 +689,12 @@ const languages = {
             none: 'بدون ضغط',
 
             dimensions: 'الأبعاد:',
-            originalFileSize: 'الحجم الأصلي:'
+            originalFileSize: 'الحجم الأصلي:',
+
+            compressionRatio: 'نسبة الضغط: {ratio}%',
+            alreadyCompressed: 'مضغوط بالفعل',
+            noCompressionNeeded: 'لا حاجة للضغط',
+            unableToGetSuggestions: 'غير قادر على الحصول على اقتراحات الضغط'
         }
     }
 };

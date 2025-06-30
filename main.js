@@ -504,6 +504,40 @@ ipcMain.handle('compress-images', async (event, imagePaths, options = {}) => {
     return results;
 });
 
+// 获取压缩信息
+ipcMain.handle('get-compressed-info', async (event, imagePath) => {
+    try {
+        const fileName = path.basename(imagePath);
+        const nameWithoutExt = path.parse(fileName).name;
+        const ext = path.parse(fileName).ext;
+        const compressedDir = path.join(path.dirname(imagePath), 'compressed');
+        const compressedPath = path.join(compressedDir, `${nameWithoutExt}_compressed${ext}`);
+
+        // 检查压缩文件是否存在
+        if (fs.existsSync(compressedPath)) {
+            const originalSize = fs.statSync(imagePath).size;
+            const compressedSize = getCompressedFileSize(compressedPath);
+
+            return {
+                isCompressed: true,
+                originalSize: originalSize,
+                compressedSize: compressedSize,
+                compressedPath: compressedPath
+            };
+        } else {
+            return {
+                isCompressed: false
+            };
+        }
+    } catch (error) {
+        console.error(`获取压缩信息失败: ${imagePath}`, error);
+        return {
+            isCompressed: false,
+            error: error.message
+        };
+    }
+});
+
 // 获取图片压缩建议
 ipcMain.handle('get-compression-suggestions', async (event, imagePath) => {
     try {
