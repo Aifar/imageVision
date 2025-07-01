@@ -136,7 +136,7 @@ body {
 /* 搜索容器 */
 .search-container {
     position: relative;
-    display: flex;
+    display: none; /* 隐藏搜索框 */
     align-items: center;
 }
 
