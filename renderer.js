@@ -486,6 +486,22 @@ class ImageViewer {
         const compressedImages = this.allImages.filter(img => img.isCompressed).length;
         const compressionProgress = totalImages > 0 ? Math.round((compressedImages / totalImages) * 100) : 0;
 
+        // 计算节省的空间
+        let totalOriginalSize = 0;
+        let totalCompressedSize = 0;
+        let spaceSaved = 0;
+
+        this.allImages.forEach(img => {
+            totalOriginalSize += img.originalSize || 0;
+            if (img.isCompressed) {
+                totalCompressedSize += img.compressedSize || 0;
+            }
+        });
+
+        if (totalOriginalSize > 0 && totalCompressedSize > 0) {
+            spaceSaved = totalOriginalSize - totalCompressedSize;
+        }
+
         this.imageCount.textContent = window.i18n.t('imagesCount', { count: count });
         if (this.currentSearchTerm) {
             this.imageCount.textContent += ` (${window.i18n.t('searchPlaceholder')}: "${this.currentSearchTerm}")`;
@@ -506,6 +522,11 @@ class ImageViewer {
                 }
             } else {
                 this.imageCount.textContent += ` | ${window.i18n.t('allCompressed')}`;
+            }
+
+            // 添加节省空间信息
+            if (spaceSaved > 0) {
+                this.imageCount.textContent += ` | ${window.i18n.t('spaceSaved')}: ${this.formatFileSize(spaceSaved)}`;
             }
         }
 

@@ -31,7 +31,7 @@ const languages = {
             compressionComplete: '压缩完成',
             success: '成功:',
             failed: '失败:',
-            spaceSaved: '节省空间:',
+            spaceSaved: '节省空间',
             openCompressedFolder: '打开压缩文件夹',
             close: '关闭',
 
@@ -117,7 +117,7 @@ const languages = {
             compressionComplete: 'Compression Complete',
             success: 'Success:',
             failed: 'Failed:',
-            spaceSaved: 'Space Saved:',
+            spaceSaved: 'Space Saved',
             openCompressedFolder: 'Open Compressed Folder',
             close: 'Close',
 
@@ -195,7 +195,7 @@ const languages = {
             compressionComplete: '圧縮完了',
             success: '成功:',
             failed: '失敗:',
-            spaceSaved: '節約された容量:',
+            spaceSaved: '節約された容量',
             openCompressedFolder: '圧縮フォルダを開く',
             close: '閉じる',
 
@@ -273,7 +273,7 @@ const languages = {
             compressionComplete: '압축 완료',
             success: '성공:',
             failed: '실패:',
-            spaceSaved: '절약된 공간:',
+            spaceSaved: '절약된 공간',
             openCompressedFolder: '압축 폴더 열기',
             close: '닫기',
 
@@ -351,7 +351,7 @@ const languages = {
             compressionComplete: 'Compression terminée',
             success: 'Succès:',
             failed: 'Échec:',
-            spaceSaved: 'Espace économisé:',
+            spaceSaved: 'Espace économisé',
             openCompressedFolder: 'Ouvrir le dossier compressé',
             close: 'Fermer',
 
@@ -429,7 +429,7 @@ const languages = {
             compressionComplete: 'Komprimierung abgeschlossen',
             success: 'Erfolgreich:',
             failed: 'Fehlgeschlagen:',
-            spaceSaved: 'Gesparter Speicherplatz:',
+            spaceSaved: 'Gesparter Speicherplatz',
             openCompressedFolder: 'Komprimierten Ordner öffnen',
             close: 'Schließen',
 
@@ -507,7 +507,7 @@ const languages = {
             compressionComplete: 'Compresión completada',
             success: 'Éxito:',
             failed: 'Fallido:',
-            spaceSaved: 'Espacio ahorrado:',
+            spaceSaved: 'Espacio ahorrado',
             openCompressedFolder: 'Abrir carpeta comprimida',
             close: 'Cerrar',
 
@@ -585,7 +585,7 @@ const languages = {
             compressionComplete: 'Сжатие завершено',
             success: 'Успешно:',
             failed: 'Неудачно:',
-            spaceSaved: 'Сэкономлено места:',
+            spaceSaved: 'Сэкономлено места',
             openCompressedFolder: 'Открыть папку со сжатыми файлами',
             close: 'Закрыть',
 
@@ -664,7 +664,7 @@ const languages = {
             compressionComplete: 'اكتمل الضغط',
             success: 'نجح:',
             failed: 'فشل:',
-            spaceSaved: 'مساحة محفوظة:',
+            spaceSaved: 'مساحة محفوظة',
             openCompressedFolder: 'فتح مجلد الصور المضغوطة',
             close: 'إغلاق',
 
