@@ -80,6 +80,8 @@ const languages = {
             // 图片详情
             dimensions: '尺寸:',
             originalFileSize: '原图大小:',
+            original: '原图',
+            compressed: '压缩图',
 
             // 压缩信息
             compressionRatio: '压缩比: {ratio}%',
@@ -157,6 +159,8 @@ const languages = {
 
             dimensions: 'Dimensions:',
             originalFileSize: 'Original Size:',
+            original: 'Original',
+            compressed: 'Compressed',
 
             compressionRatio: 'Compression Ratio: {ratio}%',
             alreadyCompressed: 'Already Compressed',
@@ -233,6 +237,8 @@ const languages = {
 
             dimensions: 'サイズ:',
             originalFileSize: '元のファイルサイズ:',
+            original: '元画像',
+            compressed: '圧縮画像',
 
             compressionRatio: '圧縮率: {ratio}%',
             alreadyCompressed: '既に圧縮済み',
@@ -309,6 +315,8 @@ const languages = {
 
             dimensions: '크기:',
             originalFileSize: '원본 파일 크기:',
+            original: '원본',
+            compressed: '압축',
 
             compressionRatio: '압축 비율: {ratio}%',
             alreadyCompressed: '이미 압축됨',
@@ -385,6 +393,8 @@ const languages = {
 
             dimensions: 'Dimensions:',
             originalFileSize: 'Taille originale:',
+            original: 'Original',
+            compressed: 'Compressé',
 
             compressionRatio: 'Taux de compression: {ratio}%',
             alreadyCompressed: 'Déjà compressé',
@@ -461,6 +471,8 @@ const languages = {
 
             dimensions: 'Abmessungen:',
             originalFileSize: 'Originalgröße:',
+            original: 'Original',
+            compressed: 'Komprimiert',
 
             compressionRatio: 'Komprimierungsrate: {ratio}%',
             alreadyCompressed: 'Bereits komprimiert',
@@ -537,6 +549,8 @@ const languages = {
 
             dimensions: 'Dimensiones:',
             originalFileSize: 'Tamaño original:',
+            original: 'Original',
+            compressed: 'Comprimido',
 
             compressionRatio: 'Relación de compresión: {ratio}%',
             alreadyCompressed: 'Ya comprimido',
@@ -613,6 +627,8 @@ const languages = {
 
             dimensions: 'Размеры:',
             originalFileSize: 'Исходный размер:',
+            original: 'Оригинал',
+            compressed: 'Сжатый',
 
             compressionRatio: 'Степень сжатия: {ratio}%',
             alreadyCompressed: 'Уже сжато',
@@ -690,6 +706,8 @@ const languages = {
 
             dimensions: 'الأبعاد:',
             originalFileSize: 'الحجم الأصلي:',
+            original: 'الأصلي',
+            compressed: 'المضغوط',
 
             compressionRatio: 'نسبة الضغط: {ratio}%',
             alreadyCompressed: 'مضغوط بالفعل',

@@ -409,26 +409,76 @@ class ImageViewer {
     async openModal(image) {
         this.currentImage = image;
         this.modalTitle.textContent = image.name;
-        this.modalOriginalSize.textContent = `${image.originalWidth} × ${image.originalHeight}`;
-        this.modalFileSize.textContent = this.formatFileSize(image.originalSize);
-        this.modalCompressionSuggestion.textContent = window.i18n.t('saved', { ratio: image.compressionRatio });
-        this.compressSingleBtn.style.display = 'block';
+
+        // 如果图片已压缩，创建左右对比布局
+        if (image.isCompressed) {
+            // 构建压缩图路径
+            const pathParts = image.path.split(/[/\\]/);
+            const fileName = pathParts[pathParts.length - 1];
+            const fileNameParts = fileName.split('.');
+            const ext = '.' + fileNameParts[fileNameParts.length - 1];
+            const nameWithoutExt = fileNameParts.slice(0, -1).join('.');
+            const dirPath = pathParts.slice(0, -1).join('/');
+            const compressedPath = `${this.compressedFolderPath}/${nameWithoutExt}_compressed${ext}`;
+
+            // 动态创建对比布局
+            const modalImageContainer = document.querySelector('.modal-image-container');
+            modalImageContainer.innerHTML = `
+                <div style="display: flex; height: 100%; position: relative;">
+                    <div style="flex: 1; display: flex; flex-direction: column;">
+                        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 10px; text-align: center; font-weight: bold; font-size: 14px; height: 44px; display: flex; align-items: center; justify-content: center;">
+                        ${window.i18n.t('original')}:${this.formatFileSize(image.originalSize)}</div>
+                        <div style="flex: 1; display: flex; align-items: center; justify-content: center; background: #f8f9fa; padding: 10px;">
+                            <img src="file://${image.path}" style="max-width: 100%; max-height: 100%; object-fit: contain;" alt="${window.i18n.t('originalImage')}" />
+                        </div>
+                    </div>
+                    
+                    <div style="flex: 1; display: flex; flex-direction: column;">
+                        <div style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; padding: 10px; text-align: center; font-weight: bold; font-size: 14px; height: 44px; display: flex; align-items: center; justify-content: center;">
+                        ${window.i18n.t('compressed')}:${this.formatFileSize(image.compressedSize)}</div>
+                        <div style="flex: 1; display: flex; align-items: center; justify-content: center; background: #f8f9fa; padding: 10px;">
+                            <img src="file://${compressedPath}" style="max-width: 100%; max-height: 100%; object-fit: contain;" alt="${window.i18n.t('compressed')}" />
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // 设置详情信息
+            this.modalOriginalSize.textContent = `${image.originalWidth} × ${image.originalHeight}`;
+            this.modalFileSize.textContent = `${window.i18n.t('original')}: ${this.formatFileSize(image.originalSize)}`;
+            this.modalCompressionSuggestion.textContent = `${window.i18n.t('saved', { ratio: image.compressionRatio })} (${window.i18n.t('compressed')}: ${this.formatFileSize(image.compressedSize)})`;
+        } else {
+            // 未压缩图片，恢复单图布局
+            const modalImageContainer = document.querySelector('.modal-image-container');
+            modalImageContainer.innerHTML = `<img id="modalImage" src="" alt="" />`;
+            this.modalImage = document.getElementById('modalImage');
+
+            this.modalOriginalSize.textContent = `${image.originalWidth} × ${image.originalHeight}`;
+            this.modalFileSize.textContent = this.formatFileSize(image.originalSize);
+            this.modalCompressionSuggestion.textContent = window.i18n.t('notCompressed');
+
+            // 加载高质量图片（显示原图）
+            this.modalImage.src = `file://${image.path}`;
+
+            // 添加加载动画
+            this.modalImage.style.opacity = '0.5';
+            this.modalImage.onload = () => {
+                this.modalImage.style.opacity = '1';
+            };
+        }
+
+        this.compressSingleBtn.style.display = 'none';
         this.compressSingleBtn.parentElement.style.display = 'block';
-
-        // 加载高质量图片（显示原图）
-        this.modalImage.src = `file://${image.path}`;
         this.imageModal.style.display = 'block';
-
-        // 添加加载动画
-        this.modalImage.style.opacity = '0.5';
-        this.modalImage.onload = () => {
-            this.modalImage.style.opacity = '1';
-        };
     }
 
     closeModal() {
         this.imageModal.style.display = 'none';
-        this.modalImage.src = '';
+
+        // 恢复原始的模态框布局
+        const modalImageContainer = document.querySelector('.modal-image-container');
+        modalImageContainer.innerHTML = `<img id="modalImage" src="" alt="" />`;
+        this.modalImage = document.getElementById('modalImage');
     }
 
     updateStats(count, folderPath) {
