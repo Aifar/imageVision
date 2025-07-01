@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![ImageVision Logo](https://via.placeholder.com/200x80/667eea/ffffff?text=ImageVision)
+![ImageVision Logo](logo.png)
 
 **A powerful image management and compression tool**
 
