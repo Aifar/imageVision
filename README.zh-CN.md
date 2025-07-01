@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![ImageVision Logo](https://via.placeholder.com/200x80/667eea/ffffff?text=ImageVision)
+![ImageVision Logo](logo.png)
 
 **一款功能强大的图片管理和压缩工具**
 
