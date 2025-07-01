@@ -527,6 +527,40 @@ class ImageViewer {
             // 添加节省空间信息
             if (spaceSaved > 0) {
                 this.imageCount.textContent += ` | ${window.i18n.t('spaceSaved')}: ${this.formatFileSize(spaceSaved)}`;
+
+                // 添加删除原图按钮
+                if (compressedImages > 0) {
+                    // 创建删除原图按钮
+                    if (!this.deleteOriginalsBtn) {
+                        this.deleteOriginalsBtn = document.createElement('button');
+                        this.deleteOriginalsBtn.className = 'delete-originals-btn';
+                        this.deleteOriginalsBtn.style.cssText = `
+                            margin-left: 10px;
+                            padding: 4px 8px;
+                            background: #dc3545;
+                            color: white;
+                            border: none;
+                            border-radius: 4px;
+                            font-size: 12px;
+                            cursor: pointer;
+                            transition: background-color 0.2s;
+                        `;
+                        this.deleteOriginalsBtn.addEventListener('mouseenter', () => {
+                            this.deleteOriginalsBtn.style.background = '#c82333';
+                        });
+                        this.deleteOriginalsBtn.addEventListener('mouseleave', () => {
+                            this.deleteOriginalsBtn.style.background = '#dc3545';
+                        });
+                        this.deleteOriginalsBtn.addEventListener('click', () => this.deleteOriginalImages());
+                        this.imageCount.parentElement.appendChild(this.deleteOriginalsBtn);
+                    }
+                    this.deleteOriginalsBtn.textContent = window.i18n.t('deleteOriginals');
+                    this.deleteOriginalsBtn.style.display = 'inline-block';
+                } else if (this.deleteOriginalsBtn) {
+                    this.deleteOriginalsBtn.style.display = 'none';
+                }
+            } else if (this.deleteOriginalsBtn) {
+                this.deleteOriginalsBtn.style.display = 'none';
             }
         }
 
@@ -796,6 +830,44 @@ class ImageViewer {
             this.updateCompressedFolderButton();
         } catch (error) {
             console.error('初始化默认设置失败:', error);
+        }
+    }
+
+    // 删除已压缩图片的原图
+    async deleteOriginalImages() {
+        const compressedImages = this.allImages.filter(img => img.isCompressed);
+
+        if (compressedImages.length === 0) {
+            return;
+        }
+
+        // 确认对话框
+        const confirmed = confirm(window.i18n.t('confirmDeleteOriginals'));
+        if (!confirmed) {
+            return;
+        }
+
+        try {
+            // 获取要删除的原图路径
+            const originalPaths = compressedImages.map(img => img.path);
+
+            // 调用后端删除文件
+            const result = await window.electronAPI.deleteOriginalImages(originalPaths);
+
+            if (result.success) {
+                // 显示成功消息
+                alert(window.i18n.t('deleteOriginalsSuccess', { count: result.deletedCount }));
+
+                // 重新加载图片列表
+                await this.loadImages();
+            } else {
+                // 显示错误消息
+                alert(window.i18n.t('deleteOriginalsError'));
+                console.error('删除原图时出现错误:', result.errors);
+            }
+        } catch (error) {
+            console.error('删除原图失败:', error);
+            alert(window.i18n.t('deleteOriginalsError'));
         }
     }
 }

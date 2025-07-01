@@ -561,4 +561,38 @@ ipcMain.handle('get-compression-suggestions', async (event, imagePath) => {
             error: error.message
         };
     }
+});
+
+// 删除已压缩图片的原图
+ipcMain.handle('delete-original-images', async (event, imagePaths) => {
+    const results = {
+        success: true,
+        deletedCount: 0,
+        errors: []
+    };
+
+    for (const imagePath of imagePaths) {
+        try {
+            // 检查文件是否存在
+            if (fs.existsSync(imagePath)) {
+                // 删除文件
+                fs.unlinkSync(imagePath);
+                results.deletedCount++;
+                console.log(`已删除原图: ${imagePath}`);
+            }
+        } catch (error) {
+            console.error(`删除原图失败: ${imagePath}`, error);
+            results.errors.push({
+                path: imagePath,
+                error: error.message
+            });
+        }
+    }
+
+    // 如果有错误，标记为部分失败
+    if (results.errors.length > 0) {
+        results.success = results.deletedCount > 0;
+    }
+
+    return results;
 }); 

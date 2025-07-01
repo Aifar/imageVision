@@ -82,6 +82,10 @@ const languages = {
             originalFileSize: '原图大小:',
             original: '原图',
             compressed: '压缩图',
+            deleteOriginals: '删除原图',
+            confirmDeleteOriginals: '确定要删除所有已压缩图片的原图吗？此操作不可撤销！',
+            deleteOriginalsSuccess: '成功删除 {count} 个原图文件',
+            deleteOriginalsError: '删除原图时出现错误',
 
             // 压缩信息
             compressionRatio: '压缩比: {ratio}%',
@@ -161,6 +165,10 @@ const languages = {
             originalFileSize: 'Original Size:',
             original: 'Original',
             compressed: 'Compressed',
+            deleteOriginals: 'Delete Originals',
+            confirmDeleteOriginals: 'Are you sure you want to delete all original images that have been compressed? This action cannot be undone!',
+            deleteOriginalsSuccess: 'Successfully deleted {count} original files',
+            deleteOriginalsError: 'Error occurred while deleting original files',
 
             compressionRatio: 'Compression Ratio: {ratio}%',
             alreadyCompressed: 'Already Compressed',
@@ -239,6 +247,10 @@ const languages = {
             originalFileSize: '元のファイルサイズ:',
             original: '元画像',
             compressed: '圧縮画像',
+            deleteOriginals: '元画像を削除',
+            confirmDeleteOriginals: '圧縮済みの元画像をすべて削除しますか？この操作は元に戻せません！',
+            deleteOriginalsSuccess: '{count}個の元画像ファイルを削除しました',
+            deleteOriginalsError: '元画像の削除中にエラーが発生しました',
 
             compressionRatio: '圧縮率: {ratio}%',
             alreadyCompressed: '既に圧縮済み',
@@ -317,6 +329,10 @@ const languages = {
             originalFileSize: '원본 파일 크기:',
             original: '원본',
             compressed: '압축',
+            deleteOriginals: '원본 삭제',
+            confirmDeleteOriginals: '압축된 모든 원본 이미지를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다!',
+            deleteOriginalsSuccess: '{count}개의 원본 파일을 삭제했습니다',
+            deleteOriginalsError: '원본 파일 삭제 중 오류가 발생했습니다',
 
             compressionRatio: '압축 비율: {ratio}%',
             alreadyCompressed: '이미 압축됨',
@@ -395,6 +411,10 @@ const languages = {
             originalFileSize: 'Taille originale:',
             original: 'Original',
             compressed: 'Compressé',
+            deleteOriginals: 'Supprimer les originaux',
+            confirmDeleteOriginals: 'Êtes-vous sûr de vouloir supprimer toutes les images originales qui ont été compressées ? Cette action ne peut pas être annulée !',
+            deleteOriginalsSuccess: '{count} fichiers originaux supprimés avec succès',
+            deleteOriginalsError: 'Erreur lors de la suppression des fichiers originaux',
 
             compressionRatio: 'Taux de compression: {ratio}%',
             alreadyCompressed: 'Déjà compressé',
@@ -473,6 +493,10 @@ const languages = {
             originalFileSize: 'Originalgröße:',
             original: 'Original',
             compressed: 'Komprimiert',
+            deleteOriginals: 'Originale löschen',
+            confirmDeleteOriginals: 'Sind Sie sicher, dass Sie alle komprimierten Originalbilder löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden!',
+            deleteOriginalsSuccess: '{count} Originaldateien erfolgreich gelöscht',
+            deleteOriginalsError: 'Fehler beim Löschen der Originaldateien',
 
             compressionRatio: 'Komprimierungsrate: {ratio}%',
             alreadyCompressed: 'Bereits komprimiert',
@@ -551,6 +575,10 @@ const languages = {
             originalFileSize: 'Tamaño original:',
             original: 'Original',
             compressed: 'Comprimido',
+            deleteOriginals: 'Eliminar originales',
+            confirmDeleteOriginals: '¿Está seguro de que desea eliminar todas las imágenes originales que han sido comprimidas? ¡Esta acción no se puede deshacer!',
+            deleteOriginalsSuccess: 'Se eliminaron exitosamente {count} archivos originales',
+            deleteOriginalsError: 'Error al eliminar los archivos originales',
 
             compressionRatio: 'Relación de compresión: {ratio}%',
             alreadyCompressed: 'Ya comprimido',
@@ -629,6 +657,10 @@ const languages = {
             originalFileSize: 'Исходный размер:',
             original: 'Оригинал',
             compressed: 'Сжатый',
+            deleteOriginals: 'Удалить оригиналы',
+            confirmDeleteOriginals: 'Вы уверены, что хотите удалить все оригинальные изображения, которые были сжаты? Это действие нельзя отменить!',
+            deleteOriginalsSuccess: 'Успешно удалено {count} оригинальных файлов',
+            deleteOriginalsError: 'Ошибка при удалении оригинальных файлов',
 
             compressionRatio: 'Степень сжатия: {ratio}%',
             alreadyCompressed: 'Уже сжато',
@@ -708,6 +740,10 @@ const languages = {
             originalFileSize: 'الحجم الأصلي:',
             original: 'الأصلي',
             compressed: 'المضغوط',
+            deleteOriginals: 'حذف الأصلية',
+            confirmDeleteOriginals: 'هل أنت متأكد من أنك تريد حذف جميع الصور الأصلية التي تم ضغطها؟ هذا الإجراء لا يمكن التراجع عنه!',
+            deleteOriginalsSuccess: 'تم حذف {count} ملف أصلي بنجاح',
+            deleteOriginalsError: 'حدث خطأ أثناء حذف الملفات الأصلية',
 
             compressionRatio: 'نسبة الضغط: {ratio}%',
             alreadyCompressed: 'مضغوط بالفعل',
