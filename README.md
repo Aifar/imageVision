@@ -6,12 +6,12 @@
 
 **A powerful image management and compression tool**
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](https://opensource.org/licenses/GPL-3.0)
 [![Electron](https://img.shields.io/badge/Electron-v27.0.0-blue.svg)](https://www.electronjs.org/)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)](https://github.com/electron/electron)
 [![Node.js](https://img.shields.io/badge/Node.js-v16.0+-green.svg)](https://nodejs.org/)
 
-[English](README.md) | [中文](README.zh-CN.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Français](README.fr.md) | [Deutsch](README.de.md) | [Español](README.es.md) | [Русский](README.ru.md) | [العربية](README.ar.md)
+[中文](README.zh-CN.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Français](README.fr.md) | [Deutsch](README.de.md) | [Español](README.es.md) | [Русский](README.ru.md) | [العربية](README.ar.md)
 
 </div>
 
@@ -180,11 +180,7 @@ A: Deletion is permanent. It's recommended to backup important images before del
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🤝 Contributing
-
-Issues and Pull Requests are welcome! See [Contributing Guide](#contributing-guide) for details.
+This project is licensed under the GPL-3.0 License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
@@ -210,52 +206,6 @@ Issues and Pull Requests are welcome! See [Contributing Guide](#contributing-gui
 - 🔄 Image format conversion
 - 🔄 Deep learning image enhancement
 
-## 💡 Contributing Guide
-
-We welcome all forms of contributions!
-
-### How to Contribute
-
-1. **Fork** this project
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a **Pull Request**
-
-### Development Environment Setup
-
-```bash
-# Clone the project
-git clone https://github.com/your-username/imagevision.git
-cd imagevision
-
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-
-# Run tests
-npm test
-```
-
-### Code Standards
-
-- Use ES6+ syntax
-- Follow JSDoc comment standards
-- Keep code clean and readable
-- Add appropriate error handling
-
-## 📞 Support & Contact
-
-If you encounter issues or have suggestions, please contact us through:
-
-- 📧 **Email**: support@imagevision.com
-- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/your-username/imagevision/issues)
-- 💡 **Feature Requests**: [GitHub Discussions](https://github.com/your-username/imagevision/discussions)
-- 📖 **Documentation**: [Wiki](https://github.com/your-username/imagevision/wiki)
-- 💬 **Community**: [Discord Server](https://discord.gg/imagevision)
-
 ## 🙏 Acknowledgments
 
 Special thanks to the following open source projects and libraries:
@@ -269,14 +219,6 @@ Special thanks to the following open source projects and libraries:
 
 <div align="center">
 
-### ⭐ If this project helps you, please give us a Star!
-
-[![GitHub stars](https://img.shields.io/github/stars/your-username/imagevision.svg?style=social&label=Star)](https://github.com/your-username/imagevision)
-[![GitHub forks](https://img.shields.io/github/forks/your-username/imagevision.svg?style=social&label=Fork)](https://github.com/your-username/imagevision/fork)
-[![GitHub watchers](https://img.shields.io/github/watchers/your-username/imagevision.svg?style=social&label=Watch)](https://github.com/your-username/imagevision)
-
 **ImageVision - Making Image Management Simple and Efficient**
-
-**Made with ❤️ by the ImageVision Team**
 
 </div>
