@@ -286,6 +286,7 @@ class ImageViewer {
             console.log('默认压缩文件夹路径:', this.compressedFolderPath);
 
             const images = await window.electronAPI.searchImages(this.currentDirectory, this.compressedFolderPath, '');
+
             this.allImages = images;
             this.filteredImages = images;
 
@@ -353,9 +354,19 @@ class ImageViewer {
         card.dataset.isCompressed = image.isCompressed.toString();
         card.addEventListener('click', () => this.openModal(image));
 
-        // 使用 file:// 协议加载图片文件
-        const originalSrc = `file://${image.path}`;
+        // 如果原图不存在，添加特殊样式类
+        if (!image.originalExists) {
+            card.classList.add('original-deleted');
+        }
 
+        let originalSrc = `file://${image.path}`;
+
+        // 使用 file:// 协议加载图片文件
+        if (!image.originalExists) {
+            originalSrc = `file://${image.compressedPath}`;
+        }
+
+        console.log(image);
         // 根据是否已压缩显示不同的压缩信息
         const compressionInfoHtml = image.isCompressed ? `
             <div class="detail-row">
@@ -369,6 +380,11 @@ class ImageViewer {
             </div>
         `;
 
+        // 构建原图状态显示文本
+        const originalStatusText = !image.originalExists
+            ? `<span class="original-deleted-badge">${window.i18n.t('originalDeleted')}</span>`
+            : '';
+
         card.innerHTML = `
             <div class="image-container">
                 <img src="${originalSrc}" 
@@ -376,12 +392,11 @@ class ImageViewer {
                      loading="lazy">
             </div>
             <div class="image-info">
-                <div class="image-name" title="${image.name}">${image.name}</div>
+                <div class="image-name" title="${image.name}">${image.name}${originalStatusText}</div>
                 <div class="image-details">
                     <div class="detail-row">
                       
                         <span>${image.originalWidth} × ${image.originalHeight}</span>
-                    
                         <span>${this.formatFileSize(image.originalSize)}</span>
                     </div>
                     <div class="compression-info">
@@ -413,35 +428,54 @@ class ImageViewer {
         // 如果图片已压缩，创建左右对比布局
         if (image.isCompressed) {
             // 构建压缩图路径
-            const pathParts = image.path.split(/[/\\]/);
-            const fileName = pathParts[pathParts.length - 1];
-            const fileNameParts = fileName.split('.');
-            const ext = '.' + fileNameParts[fileNameParts.length - 1];
-            const nameWithoutExt = fileNameParts.slice(0, -1).join('.');
-            const dirPath = pathParts.slice(0, -1).join('/');
-            const compressedPath = `${this.compressedFolderPath}/${nameWithoutExt}_compressed${ext}`;
+            const compressedPath = image.compressedPath;
 
             // 动态创建对比布局
             const modalImageContainer = document.querySelector('.modal-image-container');
-            modalImageContainer.innerHTML = `
-                <div style="display: flex; height: 100%; position: relative;">
-                    <div style="flex: 1; display: flex; flex-direction: column;">
-                        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 10px; text-align: center; font-weight: bold; font-size: 14px; height: 44px; display: flex; align-items: center; justify-content: center;">
-                        ${window.i18n.t('original')}:${this.formatFileSize(image.originalSize)}</div>
-                        <div style="flex: 1; display: flex; align-items: center; justify-content: center; background: #f8f9fa; padding: 10px;">
-                            <img src="file://${image.path}" style="max-width: 100%; max-height: 100%; object-fit: contain;" alt="${window.i18n.t('originalImage')}" />
+
+            if (image.originalExists) {
+                // 原图存在，显示对比布局
+                modalImageContainer.innerHTML = `
+                    <div style="display: flex; height: 100%; position: relative;">
+                        <div style="flex: 1; display: flex; flex-direction: column;">
+                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 10px; text-align: center; font-weight: bold; font-size: 14px; height: 44px; display: flex; align-items: center; justify-content: center;">
+                            ${window.i18n.t('original')}:${this.formatFileSize(image.originalSize)}</div>
+                            <div style="flex: 1; display: flex; align-items: center; justify-content: center; background: #f8f9fa; padding: 10px;">
+                                <img src="file://${image.path}" style="max-width: 100%; max-height: 100%; object-fit: contain;" alt="${window.i18n.t('originalImage')}" />
+                            </div>
+                        </div>
+                        
+                        <div style="flex: 1; display: flex; flex-direction: column;">
+                            <div style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; padding: 10px; text-align: center; font-weight: bold; font-size: 14px; height: 44px; display: flex; align-items: center; justify-content: center;">
+                            ${window.i18n.t('compressed')}:${this.formatFileSize(image.compressedSize)}</div>
+                            <div style="flex: 1; display: flex; align-items: center; justify-content: center; background: #f8f9fa; padding: 10px;">
+                                <img src="file://${compressedPath}" style="max-width: 100%; max-height: 100%; object-fit: contain;" alt="${window.i18n.t('compressed')}" />
+                            </div>
                         </div>
                     </div>
-                    
-                    <div style="flex: 1; display: flex; flex-direction: column;">
-                        <div style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; padding: 10px; text-align: center; font-weight: bold; font-size: 14px; height: 44px; display: flex; align-items: center; justify-content: center;">
-                        ${window.i18n.t('compressed')}:${this.formatFileSize(image.compressedSize)}</div>
-                        <div style="flex: 1; display: flex; align-items: center; justify-content: center; background: #f8f9fa; padding: 10px;">
-                            <img src="file://${compressedPath}" style="max-width: 100%; max-height: 100%; object-fit: contain;" alt="${window.i18n.t('compressed')}" />
+                `;
+            } else {
+                // 原图不存在，只显示压缩图，但使用特殊样式
+                modalImageContainer.innerHTML = `
+                    <div style="display: flex; height: 100%; position: relative; justify-content: center;">
+                        <div style="max-width: 80%; display: flex; flex-direction: column; border: 3px solid #ffc107; border-radius: 12px; overflow: hidden; background: linear-gradient(135deg, #fff9c4 0%, #fff3cd 100%);">
+                            <div style="background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%); color: #212529; padding: 12px; text-align: center; font-weight: bold; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                <span>⚠</span>
+                                <span>${window.i18n.t('originalDeleted')} - ${window.i18n.t('compressed')}</span>
+                                <span>⚠</span>
+                            </div>
+                            <div style="flex: 1; display: flex; align-items: center; justify-content: center; background: #f8f9fa; padding: 20px; min-height: 400px;">
+                                <img id="modalImage" src="file://${compressedPath}" style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);" alt="${window.i18n.t('compressed')}" />
+                            </div>
+                            <div style="padding: 15px; background: white; text-align: center; border-top: 2px solid #ffc107;">
+                                <div style="color: #856404; font-weight: 600; margin-bottom: 5px;">${window.i18n.t('compressed')}: ${this.formatFileSize(image.compressedSize)}</div>
+                                <div style="color: #6c757d; font-size: 14px;">${window.i18n.t('saved', { ratio: image.compressionRatio })}</div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `;
+                `;
+                this.modalImage = document.getElementById('modalImage');
+            }
 
             // 设置详情信息
             this.modalOriginalSize.textContent = `${image.originalWidth} × ${image.originalHeight}`;
@@ -564,8 +598,8 @@ class ImageViewer {
             }
         }
 
-        const folderName = folderPath ? folderPath.split(/[/\\]/).pop() : '';
-        this.folderPath.textContent = folderName;
+        // const folderName = folderPath ? folderPath.split(/[/\\]/).pop() : '';
+        // this.folderPath.textContent = folderName;
     }
 
     showLoading(show) {
@@ -835,7 +869,7 @@ class ImageViewer {
 
     // 删除已压缩图片的原图
     async deleteOriginalImages() {
-        const compressedImages = this.allImages.filter(img => img.isCompressed);
+        const compressedImages = this.allImages.filter(img => img.isCompressed && img.originalExists);
 
         if (compressedImages.length === 0) {
             return;
@@ -849,17 +883,18 @@ class ImageViewer {
 
         try {
             // 获取要删除的原图路径
-            const originalPaths = compressedImages.map(img => img.path);
+            // const originalPaths = compressedImages.map(img => img.path);
 
             // 调用后端删除文件
-            const result = await window.electronAPI.deleteOriginalImages(originalPaths);
+            const result = await window.electronAPI.deleteOriginalImages(this.allImages);
 
             if (result.success) {
                 // 显示成功消息
                 alert(window.i18n.t('deleteOriginalsSuccess', { count: result.deletedCount }));
-
+                this.allImages = result.list;
+                this.filteredImages = result.list;
                 // 重新加载图片列表
-                await this.loadImages();
+                this.renderImages(this.allImages);
             } else {
                 // 显示错误消息
                 alert(window.i18n.t('deleteOriginalsError'));

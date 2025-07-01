@@ -292,7 +292,7 @@ ipcMain.handle('search-images', async (event, directoryPath, compressedFolderPat
                     // 生成压缩图片路径
                     const nameWithoutExt = path.parse(fileName).name;
                     const ext = path.parse(fileName).ext;
-                    const compressedPath = path.join(compressedFolderPath, `${nameWithoutExt}_compressed${ext}`);
+                    const compressedPath = path.join(compressedFolderPath, `${nameWithoutExt}${ext}`);
 
                     // 检查压缩图片是否已存在
                     let compressedSize = 0;
@@ -318,7 +318,8 @@ ipcMain.handle('search-images', async (event, directoryPath, compressedFolderPat
                         originalWidth: size.width,
                         originalHeight: size.height,
                         lastModified: stats.mtime,
-                        isCompressed: isCompressed
+                        isCompressed: isCompressed,
+                        originalExists: true
                     };
                 } catch (error) {
                     console.error(`处理图片失败: ${filePath}`, error);
@@ -343,7 +344,7 @@ ipcMain.handle('compress-single-image', async (event, imagePath, options = {}) =
 
         // 使用自定义压缩目录或默认目录
         const compressedDir = options.compressedDir || path.join(path.dirname(imagePath), 'compressed');
-        const compressedPath = path.join(compressedDir, `${nameWithoutExt}_compressed${ext}`);
+        const compressedPath = path.join(compressedDir, `${nameWithoutExt}${ext}`);
 
         // 确保压缩目录存在
         if (!fs.existsSync(compressedDir)) {
@@ -432,7 +433,7 @@ ipcMain.handle('compress-images', async (event, imagePaths, options = {}) => {
             const fileName = path.basename(imagePath);
             const nameWithoutExt = path.parse(fileName).name;
             const ext = path.parse(fileName).ext;
-            const compressedPath = path.join(compressedDir, `${nameWithoutExt}_compressed${ext}`);
+            const compressedPath = path.join(compressedDir, `${nameWithoutExt}${ext}`);
 
             // 获取原始文件大小
             const originalSize = fs.statSync(imagePath).size;
@@ -481,7 +482,7 @@ ipcMain.handle('get-compressed-info', async (event, imagePath) => {
         const nameWithoutExt = path.parse(fileName).name;
         const ext = path.parse(fileName).ext;
         const compressedDir = path.join(path.dirname(imagePath), 'compressed');
-        const compressedPath = path.join(compressedDir, `${nameWithoutExt}_compressed${ext}`);
+        const compressedPath = path.join(compressedDir, `${nameWithoutExt}${ext}`);
 
         // 检查压缩文件是否存在
         if (fs.existsSync(compressedPath)) {
@@ -568,26 +569,30 @@ ipcMain.handle('delete-original-images', async (event, imagePaths) => {
     const results = {
         success: true,
         deletedCount: 0,
+        list: [],
         errors: []
     };
 
-    for (const imagePath of imagePaths) {
+    for (let imagePath of imagePaths) {
         try {
             // 检查文件是否存在
-            if (fs.existsSync(imagePath)) {
+            if (fs.existsSync(imagePath.path) && imagePath.isCompressed && imagePath.originalExists) {
                 // 删除文件
-                fs.unlinkSync(imagePath);
+                fs.unlinkSync(imagePath.path);
                 results.deletedCount++;
-                console.log(`已删除原图: ${imagePath}`);
+                console.log(`已删除原图: ${imagePath.path}`);
+                imagePath.originalExists = false;
             }
         } catch (error) {
-            console.error(`删除原图失败: ${imagePath}`, error);
+            console.error(`删除原图失败: ${imagePath.path}`, error);
             results.errors.push({
-                path: imagePath,
+                path: imagePath.path,
                 error: error.message
             });
         }
     }
+
+    results.list = imagePaths;
 
     // 如果有错误，标记为部分失败
     if (results.errors.length > 0) {
