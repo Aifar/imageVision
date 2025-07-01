@@ -40,10 +40,6 @@
 ### インストール
 
 ```bash
-# プロジェクトをクローン
-git clone https://github.com/your-username/imagevision.git
-cd imagevision
-
 # 依存関係をインストール
 npm install
 

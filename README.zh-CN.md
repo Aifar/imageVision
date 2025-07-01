@@ -40,10 +40,6 @@
 ### 安装步骤
 
 ```bash
-# 克隆项目
-git clone https://github.com/your-username/imagevision.git
-cd imagevision
-
 # 安装依赖
 npm install
 

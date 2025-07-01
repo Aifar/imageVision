@@ -40,10 +40,6 @@
 ### Installation
 
 ```bash
-# Projekt klonen
-git clone https://github.com/your-username/imagevision.git
-cd imagevision
-
 # Abhängigkeiten installieren
 npm install
 

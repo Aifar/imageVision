@@ -40,10 +40,6 @@
 ### التثبيت
 
 ```bash
-# استنساخ المشروع
-git clone https://github.com/your-username/imagevision.git
-cd imagevision
-
 # تثبيت التبعيات
 npm install
 
