@@ -1,10 +1,11 @@
-const { app, BrowserWindow, ipcMain, dialog, nativeImage } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, nativeImage, Menu } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
 const sharp = require('sharp');
 
 let mainWindow;
+let importWindow = null;
 
 // 获取默认压缩文件夹路径
 function getDefaultCompressedFolder() {
@@ -34,16 +35,63 @@ function createWindow() {
         show: false
     });
 
-    mainWindow.loadFile('index.html');
+    mainWindow.loadFile('main.html');
 
     mainWindow.once('ready-to-show', () => {
         mainWindow.show();
     });
 
+    // 新增：应用菜单，增加"导入"功能
+    const template = [
+        {
+            label: '功能',
+            submenu: [
+                {
+                    label: '导入',
+                    click: () => {
+                        createImportWindow();
+                    }
+                },
+                { role: 'quit', label: '退出' }
+            ]
+        },
+        { role: 'editMenu' },
+        { role: 'viewMenu' }
+    ];
+    const menu = Menu.buildFromTemplate(template);
+    Menu.setApplicationMenu(menu);
+
     // 开发环境下打开开发者工具
     if (process.argv.includes('--dev')) {
         mainWindow.webContents.openDevTools();
     }
+}
+
+function createImportWindow() {
+    if (importWindow) {
+        importWindow.focus();
+        return;
+    }
+    importWindow = new BrowserWindow({
+        width: 1200,
+        height: 800,
+        minWidth: 800,
+        minHeight: 600,
+        webPreferences: {
+            nodeIntegration: false,
+            contextIsolation: true,
+            preload: path.join(__dirname, 'preload.js')
+        },
+        titleBarStyle: 'hiddenInset',
+        show: false
+    });
+    importWindow.loadFile('import.html');
+    importWindow.once('ready-to-show', () => {
+        importWindow.show();
+    });
+    importWindow.on('closed', () => {
+        importWindow = null;
+    });
 }
 
 app.whenReady().then(createWindow);

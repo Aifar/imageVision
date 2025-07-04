@@ -9,5 +9,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
     compressSingleImage: (imagePath, options) => ipcRenderer.invoke('compress-single-image', imagePath, options),
     getCompressedInfo: (imagePath) => ipcRenderer.invoke('get-compressed-info', imagePath),
     getCompressionSuggestions: (imagePath) => ipcRenderer.invoke('get-compression-suggestions', imagePath),
-    deleteOriginalImages: (imagePaths) => ipcRenderer.invoke('delete-original-images', imagePaths)
+    deleteOriginalImages: (imagePaths) => ipcRenderer.invoke('delete-original-images', imagePaths),
+    onShowImportView: (callback) => ipcRenderer.on('show-import-view', callback)
 }); 

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title data-i18n="appTitle">图片查看器</title>
+    <title data-i18n="appTitle">图片导入与压缩</title>
     <link rel="stylesheet" href="styles.css" />
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
@@ -64,16 +64,11 @@
               <span id="currentLanguageFlag">🇨🇳</span>
               <i class="fas fa-chevron-down"></i>
             </button>
-            <div class="language-dropdown" id="languageDropdown">
-              <!-- 动态生成语言选项 -->
-            </div>
+            <div class="language-dropdown" id="languageDropdown"></div>
           </div>
         </div>
       </header>
-
-      <!-- 主内容区域 -->
       <main class="main-content">
-        <!-- 加载状态 -->
         <div
           class="loading-container"
           id="loadingContainer"
@@ -82,8 +77,6 @@
           <div class="loading-spinner"></div>
           <p data-i18n="loadingImages">正在扫描图片...</p>
         </div>
-
-        <!-- 空状态 -->
         <div class="empty-state" id="emptyState">
           <div class="empty-icon">
             <i class="fas fa-images"></i>
@@ -93,21 +86,13 @@
             点击"选择文件夹"来浏览您的图片集合
           </p>
         </div>
-
-        <!-- 图片网格 -->
-        <div class="image-grid" id="imageGrid" style="display: none">
-          <!-- 动态生成的图片对比项 -->
-        </div>
-
-        <!-- 统计信息 -->
+        <div class="image-grid" id="imageGrid" style="display: none"></div>
         <div class="stats-bar" id="statsBar" style="display: none">
           <span id="imageCount">0 张图片</span>
           <span id="folderPath"></span>
         </div>
       </main>
     </div>
-
-    <!-- 图片预览模态框 -->
     <div class="modal" id="imageModal">
       <div class="modal-content">
         <button class="modal-close" id="modalClose">
@@ -138,8 +123,6 @@
         </div>
       </div>
     </div>
-
-    <!-- 压缩进度对话框 -->
     <div class="modal" id="compressionModal">
       <div class="modal-content compression-modal">
         <div class="compression-header">
@@ -186,8 +169,7 @@
         </div>
       </div>
     </div>
-
     <script src="languages.js"></script>
-    <script src="renderer.js"></script>
+    <script src="importView.js"></script>
   </body>
 </html>

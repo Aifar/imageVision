@@ -1463,4 +1463,45 @@ body {
 
 .language-selector.active .btn-language {
     animation: pulse 2s infinite;
+}
+
+/* 图片墙主界面样式 */
+.image-grid.gallery-wall {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 2px;
+    padding: 2px;
+    background: #fff;
+}
+
+.image-card.gallery-wall {
+    border-radius: 0;
+    box-shadow: none;
+    background: none;
+    overflow: hidden;
+    cursor: pointer;
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+}
+
+.image-card.gallery-wall .image-info,
+.image-card.gallery-wall .image-details,
+.image-card.gallery-wall .image-name {
+    display: none !important;
+}
+
+.image-card.gallery-wall .image-container {
+    height: 100%;
+    width: 100%;
+    background: #eee;
+}
+
+.image-card.gallery-wall .image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 0;
+    box-shadow: none;
 } 
