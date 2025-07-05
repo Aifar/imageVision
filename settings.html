@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>设置 - 图片查看器</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 500px;
+      }
+      .settings-container {
+        padding: 16px;
+        max-width: 600px;
+        margin: 20px auto;
+        background: rgba(255, 255, 255, 0.97);
+        border-radius: 14px;
+        box-shadow: 0 8px 32px rgba(60, 60, 100, 0.18);
+        min-height: 500px;
+        max-height: 100vh;
+        overflow-y: auto;
+      }
+      .settings-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 18px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #e1e5e9;
+      }
+      .settings-header h1 {
+        font-size: 20px;
+        font-weight: 700;
+        color: #222;
+        margin: 0;
+        letter-spacing: 1px;
+      }
+      .close-btn {
+        background: none;
+        border: none;
+        font-size: 18px;
+        color: #888;
+        cursor: pointer;
+        padding: 6px;
+        border-radius: 6px;
+        transition: all 0.2s ease;
+      }
+      .close-btn:hover {
+        background: #ececec;
+        color: #333;
+      }
+      .settings-section {
+        margin-bottom: 18px;
+      }
+      .settings-section h2 {
+        font-size: 15px;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .settings-section h2 i {
+        color: #667eea;
+      }
+      .setting-item {
+        margin-bottom: 12px;
+      }
+      .setting-item label {
+        display: block;
+        font-weight: 600;
+        color: #222;
+        margin-bottom: 4px;
+        font-size: 13px;
+        letter-spacing: 0.5px;
+      }
+      .setting-item .description {
+        font-size: 13px;
+        color: #666;
+        margin-bottom: 4px;
+      }
+      .directory-input-group {
+        display: flex;
+        gap: 8px;
+        align-items: flex-end;
+      }
+      .directory-input {
+        flex: 1;
+        padding: 8px;
+        border: 2px solid #e1e5e9;
+        border-radius: 8px;
+        font-size: 13px;
+        color: #222;
+        background: #fff;
+        transition: border-color 0.2s ease;
+      }
+      .directory-input:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+      .btn-select-directory {
+        padding: 8px 14px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.08);
+      }
+      .btn-select-directory:hover {
+        background: linear-gradient(135deg, #5a67d8, #6b47b2);
+        box-shadow: 0 4px 16px rgba(102, 126, 234, 0.18);
+      }
+      .slider-group {
+        position: relative;
+        width: 100%;
+      }
+      .quality-slider {
+        width: 100%;
+        margin: 4px 0;
+        height: 2.2em;
+      }
+      .quality-value {
+        position: absolute;
+        top: -13px;
+        right: 0;
+        background: #667eea;
+        color: #fff;
+        padding: 2px 7px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 600;
+        z-index: 2;
+      }
+      .quality-range {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        color: #888;
+        margin-top: 2px;
+      }
+      .settings-actions {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+        margin-top: 16px;
+        padding-top: 10px;
+        border-top: 1px solid #e1e5e9;
+      }
+      .btn-cancel {
+        padding: 8px 14px;
+        background: #f8f9fa;
+        color: #555;
+        border: 2px solid #e1e5e9;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .btn-cancel:hover {
+        background: #e9ecef;
+        border-color: #ced4da;
+        color: #222;
+      }
+      .btn-save {
+        padding: 8px 14px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.08);
+      }
+      .btn-save:hover {
+        background: linear-gradient(135deg, #5a67d8, #6b47b2);
+        box-shadow: 0 4px 16px rgba(102, 126, 234, 0.18);
+      }
+      .btn-save:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none !important;
+      }
+      .quality-presets {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+      }
+      .quality-preset {
+        padding: 6px 12px;
+        background: #f8f9fa;
+        border: 1px solid #e1e5e9;
+        border-radius: 6px;
+        font-size: 13px;
+        color: #333;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .quality-preset:hover {
+        background: #e9ecef;
+        border-color: #ced4da;
+        color: #222;
+      }
+      .quality-preset.active {
+        background: #667eea;
+        color: #fff;
+        border-color: #667eea;
+      }
+      .header-lang-group {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-left: auto;
+        margin-right: 12px;
+      }
+      .header-lang-group label {
+        font-size: 13px;
+        color: #555;
+        font-weight: 500;
+      }
+      .language-select {
+        font-size: 13px;
+        padding: 2px 8px;
+        border-radius: 5px;
+        border: 1px solid #e1e5e9;
+        background: #fff;
+        color: #333;
+      }
+      .language-select option {
+        padding-left: 1.5em;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="settings-container">
+      <div class="settings-header">
+        <h1><i class="fas fa-cog"></i> <span data-i18n="settings"></span></h1>
+        <div class="header-lang-group">
+          <label for="languageSelect" data-i18n="language"></label>
+          <select id="languageSelect" class="language-select"></select>
+        </div>
+        <button class="close-btn" id="closeBtn">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <form id="settingsForm">
+        <div class="settings-section">
+          <h2>
+            <i class="fas fa-folder"></i>
+            <span data-i18n="imageDirectory"></span>
+          </h2>
+          <div class="setting-item">
+            <div class="directory-input-group">
+              <input
+                type="text"
+                id="imageDirectory"
+                class="directory-input"
+                readonly
+                data-i18n-placeholder="defaultImageDirectory"
+              />
+              <button
+                type="button"
+                class="btn-select-directory"
+                id="selectDirectoryBtn"
+              >
+                <i class="fas fa-folder-open"></i>
+                <span data-i18n="selectDirectory"></span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h2>
+            <i class="fas fa-compress"></i>
+            <span data-i18n="compressionSettings"></span>
+          </h2>
+
+          <div class="setting-item">
+            <div class="slider-group">
+              <input
+                type="range"
+                id="jpegQuality"
+                class="quality-slider"
+                min="0"
+                max="100"
+                value="85"
+              />
+              <span class="quality-value" id="jpegQualityValue">85</span>
+            </div>
+            <div class="quality-range">
+              <span data-i18n="lowQuality"></span>
+              <span data-i18n="highQuality"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-actions">
+          <button
+            type="button"
+            class="btn-cancel"
+            id="cancelBtn"
+            data-i18n="cancel"
+          >
+            取消
+          </button>
+          <button type="submit" class="btn-save" id="saveBtn" data-i18n="save">
+            保存设置
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <script src="languages.js"></script>
+    <script src="settings.js"></script>
+  </body>
+</html>

@@ -92,7 +92,27 @@ const languages = {
             compressionRatio: '压缩比: {ratio}%',
             alreadyCompressed: '已压缩',
             noCompressionNeeded: '无需压缩',
-            unableToGetSuggestions: '无法获取压缩建议'
+            unableToGetSuggestions: '无法获取压缩建议',
+
+            // 设置相关
+            settings: '设置',
+            imageDirectory: '图片目录',
+            defaultImageDirectory: '默认图片目录',
+            selectDirectory: '选择目录',
+            compressionSettings: '压缩设置',
+            jpegQuality: 'JPEG 压缩质量',
+            pngQuality: 'PNG 压缩质量',
+            webpQuality: 'WebP 压缩质量',
+            qualityDesc: '设置 {type} 图片的压缩质量（0-100）',
+            lowQuality: '低质量 (0)',
+            highQuality: '高质量 (100)',
+            cancel: '取消',
+            save: '保存设置',
+            feature: '功能',
+            import: '导入',
+            quit: '退出',
+            language: '语言',
+            displayName: '简体中文'
         }
     },
 
@@ -175,7 +195,27 @@ const languages = {
             compressionRatio: 'Compression Ratio: {ratio}%',
             alreadyCompressed: 'Already Compressed',
             noCompressionNeeded: 'No Compression Needed',
-            unableToGetSuggestions: 'Unable to get compression suggestions'
+            unableToGetSuggestions: 'Unable to get compression suggestions',
+
+            // 设置相关
+            settings: 'Settings',
+            imageDirectory: 'Image Directory',
+            defaultImageDirectory: 'Default Image Directory',
+            selectDirectory: 'Select Directory',
+            compressionSettings: 'Compression Settings',
+            jpegQuality: 'JPEG Quality',
+            pngQuality: 'PNG Quality',
+            webpQuality: 'WebP Quality',
+            qualityDesc: 'Set {type} image compression quality (0-100)',
+            lowQuality: 'Low (0)',
+            highQuality: 'High (100)',
+            cancel: 'Cancel',
+            save: 'Save Settings',
+            feature: 'Feature',
+            import: 'Import',
+            quit: 'Quit',
+            language: 'Language',
+            displayName: 'English'
         }
     },
 
@@ -258,7 +298,27 @@ const languages = {
             compressionRatio: '圧縮率: {ratio}%',
             alreadyCompressed: '既に圧縮済み',
             noCompressionNeeded: '圧縮不要',
-            unableToGetSuggestions: '圧縮提案を取得できません'
+            unableToGetSuggestions: '圧縮提案を取得できません',
+
+            // 设置相关
+            settings: '設定',
+            imageDirectory: '画像フォルダ',
+            defaultImageDirectory: 'デフォルトの画像フォルダ',
+            selectDirectory: 'フォルダを選択',
+            compressionSettings: '圧縮設定',
+            jpegQuality: 'JPEG圧縮品質',
+            pngQuality: 'PNG圧縮品質',
+            webpQuality: 'WebP圧縮品質',
+            qualityDesc: '{type}画像の圧縮品質を設定（0-100）',
+            lowQuality: '低品質 (0)',
+            highQuality: '高品質 (100)',
+            cancel: 'キャンセル',
+            save: '設定を保存',
+            feature: '機能',
+            import: 'インポート',
+            quit: '終了',
+            language: '言語',
+            displayName: '日本語'
         }
     },
 
@@ -341,7 +401,27 @@ const languages = {
             compressionRatio: '압축 비율: {ratio}%',
             alreadyCompressed: '이미 압축됨',
             noCompressionNeeded: '압축 불필요',
-            unableToGetSuggestions: '압축 제안을 가져올 수 없습니다'
+            unableToGetSuggestions: '압축 제안을 가져올 수 없습니다',
+
+            // 设置相关
+            settings: '설정',
+            imageDirectory: '이미지 폴더',
+            defaultImageDirectory: '기본 이미지 폴더',
+            selectDirectory: '폴더 선택',
+            compressionSettings: '압축 설정',
+            jpegQuality: 'JPEG 압축 품질',
+            pngQuality: 'PNG 압축 품질',
+            webpQuality: 'WebP 압축 품질',
+            qualityDesc: '{type} 이미지의 압축 품질을 설정 (0-100)',
+            lowQuality: '저품질 (0)',
+            highQuality: '고품질 (100)',
+            cancel: '취소',
+            save: '설정 저장',
+            feature: '기능',
+            import: '가져오기',
+            quit: '종료',
+            language: '언어',
+            displayName: '한국어'
         }
     },
 
@@ -424,7 +504,27 @@ const languages = {
             compressionRatio: 'Taux de compression: {ratio}%',
             alreadyCompressed: 'Déjà compressé',
             noCompressionNeeded: 'Aucune compression nécessaire',
-            unableToGetSuggestions: 'Impossible d\'obtenir des suggestions de compression'
+            unableToGetSuggestions: 'Impossible d\'obtenir des suggestions de compression',
+
+            // 设置相关
+            settings: 'Paramètres',
+            imageDirectory: 'Répertoire des images',
+            defaultImageDirectory: 'Répertoire des images par défaut',
+            selectDirectory: 'Sélectionner le répertoire',
+            compressionSettings: 'Paramètres de compression',
+            jpegQuality: 'Qualité JPEG',
+            pngQuality: 'Qualité PNG',
+            webpQuality: 'Qualité WebP',
+            qualityDesc: 'Définir la qualité de compression des images {type} (0-100)',
+            lowQuality: 'Faible (0)',
+            highQuality: 'Élevée (100)',
+            cancel: 'Annuler',
+            save: 'Enregistrer les paramètres',
+            feature: 'Fonction',
+            import: 'Importer',
+            quit: 'Quitter',
+            language: 'Langue',
+            displayName: 'Français'
         }
     },
 
@@ -507,7 +607,27 @@ const languages = {
             compressionRatio: 'Komprimierungsrate: {ratio}%',
             alreadyCompressed: 'Bereits komprimiert',
             noCompressionNeeded: 'Keine Komprimierung erforderlich',
-            unableToGetSuggestions: 'Komprimierungsvorschläge können nicht abgerufen werden'
+            unableToGetSuggestions: 'Komprimierungsvorschläge können nicht abgerufen werden',
+
+            // 设置相关
+            settings: 'Einstellungen',
+            imageDirectory: 'Bildverzeichnis',
+            defaultImageDirectory: 'Standardbildverzeichnis',
+            selectDirectory: 'Verzeichnis auswählen',
+            compressionSettings: 'Komprimierungseinstellungen',
+            jpegQuality: 'JPEG-Qualität',
+            pngQuality: 'PNG-Qualität',
+            webpQuality: 'WebP-Qualität',
+            qualityDesc: 'Komprimierungsqualität für {type}-Bilder festlegen (0-100)',
+            lowQuality: 'Niedrig (0)',
+            highQuality: 'Hoch (100)',
+            cancel: 'Abbrechen',
+            save: 'Einstellungen speichern',
+            feature: 'Funktion',
+            import: 'Importieren',
+            quit: 'Beenden',
+            language: 'Sprache',
+            displayName: 'Deutsch'
         }
     },
 
@@ -590,7 +710,27 @@ const languages = {
             compressionRatio: 'Relación de compresión: {ratio}%',
             alreadyCompressed: 'Ya comprimido',
             noCompressionNeeded: 'No se necesita compresión',
-            unableToGetSuggestions: 'No se pueden obtener sugerencias de compresión'
+            unableToGetSuggestions: 'No se pueden obtener sugerencias de compresión',
+
+            // 设置相关
+            settings: 'Configuración',
+            imageDirectory: 'Directorio de imágenes',
+            defaultImageDirectory: 'Directorio de imágenes predeterminado',
+            selectDirectory: 'Seleccionar directorio',
+            compressionSettings: 'Configuración de compresión',
+            jpegQuality: 'Calidad JPEG',
+            pngQuality: 'Calidad PNG',
+            webpQuality: 'Calidad WebP',
+            qualityDesc: 'Establecer calidad de compresión de imágenes {type} (0-100)',
+            lowQuality: 'Baja (0)',
+            highQuality: 'Alta (100)',
+            cancel: 'Cancelar',
+            save: 'Guardar configuración',
+            feature: 'Característica',
+            import: 'Importar',
+            quit: 'Salir',
+            language: 'Idioma',
+            displayName: 'Español'
         }
     },
 
@@ -673,7 +813,27 @@ const languages = {
             compressionRatio: 'Степень сжатия: {ratio}%',
             alreadyCompressed: 'Уже сжато',
             noCompressionNeeded: 'Сжатие не требуется',
-            unableToGetSuggestions: 'Невозможно получить рекомендации по сжатию'
+            unableToGetSuggestions: 'Невозможно получить рекомендации по сжатию',
+
+            // 设置相关
+            settings: 'Настройки',
+            imageDirectory: 'Каталог изображений',
+            defaultImageDirectory: 'По умолчанию каталог изображений',
+            selectDirectory: 'Выбрать каталог',
+            compressionSettings: 'Настройки сжатия',
+            jpegQuality: 'Качество JPEG',
+            pngQuality: 'Качество PNG',
+            webpQuality: 'Качество WebP',
+            qualityDesc: 'Установить качество сжатия изображений {type} (0-100)',
+            lowQuality: 'Низкое (0)',
+            highQuality: 'Высокое (100)',
+            cancel: 'Отмена',
+            save: 'Сохранить настройки',
+            feature: 'Функция',
+            import: 'Импортировать',
+            quit: 'Выйти',
+            language: 'Язык',
+            displayName: 'Русский'
         }
     },
 
@@ -757,7 +917,27 @@ const languages = {
             compressionRatio: 'نسبة الضغط: {ratio}%',
             alreadyCompressed: 'مضغوط بالفعل',
             noCompressionNeeded: 'لا حاجة للضغط',
-            unableToGetSuggestions: 'غير قادر على الحصول على اقتراحات الضغط'
+            unableToGetSuggestions: 'غير قادر على الحصول على اقتراحات الضغط',
+
+            // 设置相关
+            settings: 'الإعدادات',
+            imageDirectory: 'مجلد الصور',
+            defaultImageDirectory: 'مجلد الصور الافتراضي',
+            selectDirectory: 'اختر المجلد',
+            compressionSettings: 'إعدادات الضغط',
+            jpegQuality: 'جودة JPEG',
+            pngQuality: 'جودة PNG',
+            webpQuality: 'جودة WebP',
+            qualityDesc: 'تحديد جودة ضغط الصور {type} (0-100)',
+            lowQuality: 'منخفض (0)',
+            highQuality: 'عالي (100)',
+            cancel: 'إلغاء',
+            save: 'حفظ الإعدادات',
+            feature: 'الميزة',
+            import: 'استيراد',
+            quit: 'خروج',
+            language: 'اللغة',
+            displayName: 'العربية'
         }
     }
 };
@@ -805,8 +985,8 @@ class I18n {
     setLanguage(lang) {
         if (languages[lang]) {
             this.currentLang = lang;
-            this.loadTranslations();
             localStorage.setItem('imageviewer-language', lang);
+            this.loadTranslations();
             this.updateUI();
         }
     }
@@ -877,4 +1057,4 @@ class I18n {
 }
 
 // 导出全局实例
-window.i18n = new I18n(); 
+window.i18n = new I18n();

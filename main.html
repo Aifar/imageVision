@@ -18,6 +18,17 @@
       </header>
       <!-- 主内容区域 -->
       <main class="main-content">
+        <div class="empty-state" id="emptyState" style="display: none">
+          <div class="empty-icon">
+            <i class="fas fa-images"></i>
+          </div>
+          <h3 data-i18n="startBrowsing">开始浏览图片</h3>
+          <p>
+            点击"<span class="import-link" id="importLink" data-i18n="import"
+              >导入</span
+            >"来导入您的图片集合
+          </p>
+        </div>
         <div class="image-grid" id="imageGrid" style="display: grid"></div>
       </main>
     </div>

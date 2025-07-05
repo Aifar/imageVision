@@ -2,11 +2,20 @@ class GalleryWall {
     constructor() {
         this.allImages = [];
         this.imageGrid = document.getElementById('imageGrid');
+        this.emptyState = document.getElementById('emptyState');
         this.init();
     }
 
     async init() {
         await this.waitForI18n();
+        const settings = await window.electronAPI.getSettings();
+        if (settings.language) {
+            window.i18n.setLanguage(settings.language);
+        }
+        if (settings.imageDirectory) {
+            this.imageDirectory = settings.imageDirectory;
+        }
+
         this.loadImages();
     }
 
@@ -18,18 +27,20 @@ class GalleryWall {
 
     async loadImages() {
         // 假设主进程提供了默认图片目录
-        const defaultFolder = await window.electronAPI.getDefaultCompressedFolder();
-        const images = await window.electronAPI.searchImages(defaultFolder, defaultFolder, '');
-        this.allImages = images;
-        this.renderImages(images);
+        const images = await window.electronAPI.searchImages(this.imageDirectory, '', '');
+        if (images.length > 0) {
+            this.allImages = images;
+            this.renderImages(images);
+        } else {
+            this.emptyState.style.display = 'block';
+        }
     }
 
     renderImages(images) {
         this.imageGrid.innerHTML = '';
-        this.imageGrid.classList.add('gallery-wall');
         images.forEach(image => {
             const card = document.createElement('div');
-            card.className = 'image-card gallery-wall';
+            card.className = 'image-card';
             card.innerHTML = `
                 <div class="image-container">
                     <img src="file://${image.path}" alt="${image.name}" loading="lazy">
@@ -52,4 +63,12 @@ class GalleryWall {
 
 document.addEventListener('DOMContentLoaded', () => {
     new GalleryWall();
+
+    // 导入链接点击事件
+    const importLink = document.getElementById('importLink');
+    if (importLink) {
+        importLink.addEventListener('click', () => {
+            window.electronAPI.showImportView();
+        });
+    }
 }); 

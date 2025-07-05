@@ -3,9 +3,11 @@ const path = require('path');
 const fs = require('fs');
 const os = require('os');
 const sharp = require('sharp');
+const fse = require('fs-extra');
 
 let mainWindow;
 let importWindow = null;
+let settingsWindow = null;
 
 // 获取默认压缩文件夹路径
 function getDefaultCompressedFolder() {
@@ -19,6 +21,39 @@ function getDefaultCompressedFolder() {
 
     return imagevisionPath;
 }
+
+// 菜单多语言支持
+function getMenuLang() {
+    // 读取设置文件 language 字段，否则用系统语言
+    const settingsPath = require('path').join(os.homedir(), '.imagevision-settings.json');
+    let lang = 'zh';
+    try {
+        if (fs.existsSync(settingsPath)) {
+            const settings = JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
+            if (settings.language) lang = settings.language;
+        } else {
+            const sysLang = (process.env.LANG || 'zh').toLowerCase();
+            if (sysLang.startsWith('en')) lang = 'en';
+        }
+    } catch { }
+    return lang;
+}
+const translations = {
+    zh: {
+        feature: '功能',
+        import: '导入',
+        settings: '设置',
+        quit: '退出'
+    },
+    en: {
+        feature: 'Feature',
+        import: 'Import',
+        settings: 'Settings',
+        quit: 'Quit'
+    }
+};
+const lang = getMenuLang();
+const t = key => (translations[lang] && translations[lang][key]) || key;
 
 function createWindow() {
     mainWindow = new BrowserWindow({
@@ -41,18 +76,24 @@ function createWindow() {
         mainWindow.show();
     });
 
-    // 新增：应用菜单，增加"导入"功能
+    // 新增：应用菜单，增加"导入"和"设置"功能
     const template = [
         {
-            label: '功能',
+            label: t('feature'),
             submenu: [
                 {
-                    label: '导入',
+                    label: t('import'),
                     click: () => {
                         createImportWindow();
                     }
                 },
-                { role: 'quit', label: '退出' }
+                {
+                    label: t('settings'),
+                    click: () => {
+                        createSettingsWindow();
+                    }
+                },
+                { role: 'quit', label: t('quit') }
             ]
         },
         { role: 'editMenu' },
@@ -83,7 +124,9 @@ function createImportWindow() {
             preload: path.join(__dirname, 'preload.js')
         },
         titleBarStyle: 'hiddenInset',
-        show: false
+        show: false,
+        parent: mainWindow,
+        modal: false
     });
     importWindow.loadFile('import.html');
     importWindow.once('ready-to-show', () => {
@@ -91,6 +134,36 @@ function createImportWindow() {
     });
     importWindow.on('closed', () => {
         importWindow = null;
+    });
+}
+
+function createSettingsWindow() {
+    if (settingsWindow) {
+        settingsWindow.focus();
+        return;
+    }
+    settingsWindow = new BrowserWindow({
+        width: 600,
+        height: 600,
+        minWidth: 500,
+        minHeight: 500,
+        webPreferences: {
+            nodeIntegration: false,
+            contextIsolation: true,
+            preload: path.join(__dirname, 'preload.js')
+        },
+        titleBarStyle: 'hiddenInset',
+        show: false,
+        resizable: true,
+        modal: true,
+        parent: mainWindow
+    });
+    settingsWindow.loadFile('settings.html');
+    settingsWindow.once('ready-to-show', () => {
+        settingsWindow.show();
+    });
+    settingsWindow.on('closed', () => {
+        settingsWindow = null;
     });
 }
 
@@ -126,6 +199,11 @@ ipcMain.handle('get-default-compressed-folder', () => {
     return getDefaultCompressedFolder();
 });
 
+// 显示导入窗口
+ipcMain.on('show-import-view', () => {
+    createImportWindow();
+});
+
 // 递归搜索图片文件
 function findImages(dir, imageFiles = []) {
     const supportedExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.svg', '.tiff', '.tif'];
@@ -154,30 +232,61 @@ function findImages(dir, imageFiles = []) {
 }
 
 
-// 图片压缩配置
-const compressionConfig = {
-    jpeg: {
-        quality: 85,
-        progressive: true,
-        mozjpeg: true
-    },
-    png: {
-        quality: [0.6, 0.8],
-        speed: 4
-    },
-    gif: {
-        optimizationLevel: 3
-    },
-    webp: {
-        quality: 85
+// 获取压缩配置
+function getCompressionConfig() {
+    try {
+        if (fs.existsSync(settingsPath)) {
+            const settingsData = fs.readFileSync(settingsPath, 'utf8');
+            const settings = JSON.parse(settingsData);
+
+            return {
+                jpeg: {
+                    quality: settings.jpegQuality || 85,
+                    progressive: true,
+                    mozjpeg: true
+                },
+                png: {
+                    quality: [0.6, 0.8],
+                    speed: 4
+                },
+                gif: {
+                    optimizationLevel: 3
+                },
+                webp: {
+                    quality: settings.jpegQuality || 85
+                }
+            };
+        }
+    } catch (error) {
+        console.error('读取压缩配置失败:', error);
     }
-};
+
+    // 默认配置
+    return {
+        jpeg: {
+            quality: 85,
+            progressive: true,
+            mozjpeg: true
+        },
+        png: {
+            quality: [0.6, 0.8],
+            speed: 4
+        },
+        gif: {
+            optimizationLevel: 3
+        },
+        webp: {
+            quality: 85
+        }
+    };
+}
 
 // 使用 Sharp 压缩图片
 async function compressImageWithSharp(inputPath, outputPath, options = {}) {
     try {
         const ext = path.extname(inputPath).toLowerCase();
         let sharpInstance = sharp(inputPath);
+        const compressionConfig = getCompressionConfig();
 
         // 根据文件类型应用不同的压缩策略
         switch (ext) {
@@ -228,6 +337,7 @@ async function compressImageWithImagemin(inputPath, outputPath, options = {}) {
 
         const ext = path.extname(inputPath).toLowerCase();
         const plugins = [];
+        const compressionConfig = getCompressionConfig();
 
         // 根据文件类型选择压缩插件
         switch (ext) {
@@ -264,7 +374,7 @@ async function compressImageWithImagemin(inputPath, outputPath, options = {}) {
 
             if (files.length > 0) {
                 // 重命名文件到目标路径
-                const File = files[0];
+                const compressedFile = files[0];
                 if (compressedFile.destinationPath !== outputPath) {
                     fs.renameSync(compressedFile.destinationPath, outputPath);
                 }
@@ -648,4 +758,82 @@ ipcMain.handle('delete-original-images', async (event, imagePaths) => {
     }
 
     return results;
-}); 
+});
+
+// 设置相关的 IPC 处理器
+const settingsPath = path.join(os.homedir(), '.imagevision-settings.json');
+
+// 获取设置
+ipcMain.handle('get-settings', () => {
+    try {
+        if (fs.existsSync(settingsPath)) {
+            const settingsData = fs.readFileSync(settingsPath, 'utf8');
+            return JSON.parse(settingsData);
+        }
+        return {
+            imageDirectory: getDefaultCompressedFolder(),
+            compressionQuality: 85,
+            jpegQuality: 85,
+            pngQuality: 80,
+            webpQuality: 85
+        };
+    } catch (error) {
+        console.error('读取设置失败:', error);
+        return {
+            imageDirectory: getDefaultCompressedFolder(),
+            compressionQuality: 85,
+            jpegQuality: 85,
+            pngQuality: 80,
+            webpQuality: 85
+        };
+    }
+});
+
+// 保存设置
+ipcMain.handle('save-settings', async (event, settings) => {
+    try {
+        const settingsData = JSON.stringify(settings, null, 2);
+        fs.writeFileSync(settingsPath, settingsData, 'utf8');
+        return { success: true };
+    } catch (error) {
+        console.error('保存设置失败:', error);
+        return { success: false, error: error.message };
+    }
+});
+
+// 选择图片目录
+ipcMain.handle('select-image-directory', async (event, currentPath) => {
+    const result = await dialog.showOpenDialog(settingsWindow || mainWindow, {
+        properties: ['openDirectory'],
+        defaultPath: currentPath || undefined
+    });
+
+    if (!result.canceled && result.filePaths.length > 0) {
+        return result.filePaths[0];
+    }
+    return null;
+});
+
+ipcMain.handle('copy-images-to-directory', async (event, { from, to }) => {
+    try {
+        if (!fs.existsSync(from) || !fs.existsSync(to)) {
+            return { success: false, error: '目录不存在' };
+        }
+        // 只复制图片文件
+        const supportedExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.svg', '.tiff', '.tif'];
+        const files = findImages(from);
+        for (const file of files) {
+            const rel = path.relative(from, file);
+            const dest = path.join(to, rel);
+            await fse.ensureDir(path.dirname(dest));
+            await fse.copyFile(file, dest);
+        }
+        return { success: true, count: files.length };
+    } catch (e) {
+        return { success: false, error: e.message };
+    }
+});
+
+ipcMain.on('debug-log', (event, msg) => {
+    console.log('[Renderer Debug]', msg);
+});
