@@ -690,6 +690,8 @@ class ImportCompressor {
                 if (this.currentCompressions === 0 && this.compressionQueue.length === 0 && this.isCompressing) {
                     this.isCompressing = false;
                     this.setCompressionState(false);
+                    window.electronAPI.logToMain('ImportView processCompressionQueue done:' + this.allImages.length);
+                    window.electronAPI.refreshGalleryWall({ images: this.allImages });
                 }
             });
         }

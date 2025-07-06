@@ -32,7 +32,7 @@ class GalleryWall {
             this.allImages = images;
             this.renderImages(images);
         } else {
-            this.emptyState.style.display = 'block';
+            this.emptyState.style.display = 'flex';
         }
     }
 
@@ -71,4 +71,10 @@ document.addEventListener('DOMContentLoaded', () => {
             window.electronAPI.showImportView();
         });
     }
+
+    window.electronAPI.onRefreshGalleryWall((data) => {
+        window.electronAPI.logToMain('refresh-gallery-wall received: ' + data.images.length);
+        gallery.allImages = gallery.allImages.concat(data.images);
+        gallery.renderImages(gallery.allImages);
+    });
 }); 

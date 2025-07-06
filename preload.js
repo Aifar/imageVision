@@ -11,6 +11,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
     getCompressionSuggestions: (imagePath) => ipcRenderer.invoke('get-compression-suggestions', imagePath),
     deleteOriginalImages: (imagePaths) => ipcRenderer.invoke('delete-original-images', imagePaths),
     showImportView: () => ipcRenderer.send('show-import-view'),
+    refreshGalleryWall: (data) => ipcRenderer.send('refresh-gallery-wall', data),
+    onRefreshGalleryWall: (callback) => ipcRenderer.on('refresh-gallery-wall', (event, data) => callback(data)),
     // 设置相关的API
     getSettings: () => ipcRenderer.invoke('get-settings'),
     saveSettings: (settings) => ipcRenderer.invoke('save-settings', settings),

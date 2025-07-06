@@ -204,6 +204,14 @@ ipcMain.on('show-import-view', () => {
     createImportWindow();
 });
 
+ipcMain.on('refresh-gallery-wall', (event, data) => {
+    console.log('[Renderer Debug]', 'main receive refresh-gallery-wall');
+    if (mainWindow) {
+        console.log('[Renderer Debug]', 'main send refresh-gallery-wall');
+        mainWindow.webContents.send('refresh-gallery-wall', data);
+    }
+});
+
 // 递归搜索图片文件
 function findImages(dir, imageFiles = []) {
     const supportedExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.svg', '.tiff', '.tif'];
